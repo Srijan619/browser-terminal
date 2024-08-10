@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { PromptInstance } from '../types';
 import { handleCommand, CURRENT_DIR } from '../utils/commands';
 import { WELCOME_MESSAGE } from "../staticMessages/welcomeMessage";
-import { marked } from 'marked';
 
 export const useCommandPromptStore = defineStore('commandPrompt', () => {
     const PROMPT_INSTANCES = ref<PromptInstance[]>([]);
@@ -26,7 +25,7 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
     const createWelcomeMessagePrompt = (): void => {
         const messagePromptInstance = emptyPromptInstance();
         messagePromptInstance.enabled = false;
-        messagePromptInstance.reply = marked.parse(WELCOME_MESSAGE).toString();
+        messagePromptInstance.reply = WELCOME_MESSAGE.toString();
         PROMPT_INSTANCES.value.push(messagePromptInstance);
     }
 

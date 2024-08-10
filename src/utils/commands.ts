@@ -4,6 +4,7 @@ import { SAMPLE_PEM_KEY } from "../staticMessages/examplePemKey";
 import { zipDiffViewerProject } from "../staticMessages/zipDiffViewer";
 import { WELCOME_MESSAGE } from "../staticMessages/welcomeMessage";
 import { NEATJS_PROJECT_DESCRIPTION } from "../staticMessages/Neat";
+import { marked } from "marked";
 
 const ROOT_DIR = '~';
 let CURRENT_DIR = ROOT_DIR;
@@ -12,6 +13,7 @@ const COMMAND_CD = 'cd';
 const COMMAND_PWD = 'pwd';
 const COMMAND_CLEAR = 'clear';
 const COMMAND_CAT = 'cat';
+const COMMAND_TOP = 'top';
 const COMMAND_HELP = 'help';
 
 const AVAILABLE_DIRS = new Map();
@@ -24,14 +26,18 @@ AVAILABLE_DIRS.set("bio.md", WELCOME_MESSAGE);
 AVAILABLE_DIRS.set("projects", PROJECT_MAP);
 AVAILABLE_DIRS.set("secret_keys.pem", SAMPLE_PEM_KEY);
 
-const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_HELP];
-const BAD_COMMAND_ERROR_MESSAGE = 'Command not found!';
+const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HELP];
+const BAD_COMMAND_ERROR_MESSAGE = 'Command not found! Type <code>help</code> to know all options.';
 let PROMPT_INSTANCE: PromptInstance;
 
 const getCommandPromptStore = () => {
     return useCommandPromptStore();
 };
 
+const formatBadCommandMessage = (command: string) => {
+    let formattedMessage = (command && `<code>${command}</code> `) + BAD_COMMAND_ERROR_MESSAGE;
+    return marked.parse(formattedMessage).toString();
+}
 // Function to check if the command is allowed
 const isInputCommandAllowed = (command: string): boolean => {
     if (!command) return false;
@@ -75,7 +81,7 @@ const getFileRecursively = (currentDirName: string, currentDirContent: any = AVA
     if (content) return content;
 
     // If content is not found directly, recursively search within nested Maps
-    for (const [key, value] of currentDirContent) {
+    for (const [, value] of currentDirContent) {
         if (value instanceof Map) {
             const result = getFileRecursively(currentDirName, value);
             if (result) {
@@ -115,7 +121,7 @@ const handleClearCommand = (): void => {
 }
 
 const handleHelpCommand = (): void => {
-    PROMPT_INSTANCE.reply = `Need help? Try followings: ${VALID_COMMANDS.join(' | ')}`
+    PROMPT_INSTANCE.reply = marked.parse(`Need help? Try followings: <code>${VALID_COMMANDS.join(' | ')}</code>`).toString();
 }
 
 const handleLsCommand = (): void => {
@@ -158,11 +164,37 @@ const handleCatCommand = () => {
     }
 }
 
-const handleCommand = (promptInstance: PromptInstance): void => {
-    if (!isInputCommandAllowed(promptInstance.command)) {
-        promptInstance.reply = BAD_COMMAND_ERROR_MESSAGE;
+const handleTopCommand = () => {
+    // DUMMY top command rep of os
+    if (performance.memory) {
+        const memoryInfo = performance.memory;
+
+        // Convert bytes to megabytes (1 MB = 1024 * 1024 bytes)
+        const bytesToMB = (bytes: number) => (bytes / (1024 * 1024)).toFixed(2);
+
+        let message = '';
+        message += '<strong>Memory Usage Summary:</strong><br>';
+        message += 'JS Heap Size Limit: ' + bytesToMB(memoryInfo.jsHeapSizeLimit) + ' MB<br>';
+        message += 'Total Allocated JS Heap Size: ' + bytesToMB(memoryInfo.totalJSHeapSize) + ' MB<br>';
+        message += 'Currently Used JS Heap Size: ' + bytesToMB(memoryInfo.usedJSHeapSize) + ' MB<br>';
+
+        PROMPT_INSTANCE.reply = marked.parse(message).toString();
+    } else {
+        PROMPT_INSTANCE.reply = 'Memory information is not available in this browser.';
+    }
+}
+
+const handleDefaultCheck = () => {
+    if (!PROMPT_INSTANCE.command) {
+        return; //
+    }
+    if (!isInputCommandAllowed(PROMPT_INSTANCE.command)) {
+        PROMPT_INSTANCE.reply = formatBadCommandMessage(PROMPT_INSTANCE.command);
         return;
     }
+}
+
+const handleCommand = (promptInstance: PromptInstance): void => {
     PROMPT_INSTANCE = promptInstance
     switch (commandPrefix(promptInstance.command)) {
         case COMMAND_CLEAR:
@@ -179,6 +211,12 @@ const handleCommand = (promptInstance: PromptInstance): void => {
             break;
         case COMMAND_CAT:
             handleCatCommand();
+            break;
+        case COMMAND_TOP:
+            handleTopCommand();
+            break;
+        default:
+            handleDefaultCheck();
             break;
     }
 }

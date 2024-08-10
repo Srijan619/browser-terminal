@@ -10,7 +10,7 @@ import CommandPromptInputInstance from './CommandPromptInstance.vue';
 
 <style scoped>
 .container {
-  width: 100vw;
+  width: min-content;
   height: 600px;
   background-color: black;
   color: #888;
@@ -18,6 +18,6 @@ import CommandPromptInputInstance from './CommandPromptInstance.vue';
   flex-direction: column;
   padding: 0.1rem;
   max-height: 600px;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 </style>

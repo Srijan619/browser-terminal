@@ -3,10 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://srijan619.github.io/browser-terminal/",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "marked": "^14.0.0",
@@ -17,6 +20,7 @@
   "devDependencies": {
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.1.2",
+    "gh-pages": "^6.1.1",
     "typescript": "^5.5.3",
     "vite": "^5.4.0",
     "vue-tsc": "^2.0.29"

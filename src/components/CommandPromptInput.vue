@@ -44,5 +44,7 @@ const handleEnter = () => {
     all: unset;
     flex: 2;
     color: whitesmoke;
+    white-space: nowrap;
+    /* Prevent line wrapping */
 }
 </style>

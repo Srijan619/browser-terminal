@@ -7,7 +7,6 @@ import { storeToRefs } from 'pinia'
 // access the `store` variable anywhere in the component ✨
 const store = useCommandPromptStore()
 const { PROMPT_INSTANCES } = storeToRefs(store)
-console.log(PROMPT_INSTANCES)
 </script>
 
 <template>

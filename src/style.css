@@ -1,5 +1,5 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: monospace;
   line-height: 1.5;
   font-weight: 400;
 
@@ -17,6 +17,23 @@ body {
   margin: 0;
 }
 
+code {
+  background-color: #242424;
+  /* Light grey background for inline code */
+  padding: 2px 4px;
+  /* Padding around inline code */
+  border-radius: 3px;
+  /* Rounded corners */
+}
+
+pre {
+  background-color: #242424;
+  /* Slightly darker background for code blocks */
+  padding: 10px;
+  /* Padding for code blocks */
+  border-left: 5px solid #007bff;
+  /* Blue left border */
+}
 
 @media (prefers-color-scheme: light) {
   :root {

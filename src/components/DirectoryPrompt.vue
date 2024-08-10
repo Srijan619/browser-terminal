@@ -8,12 +8,12 @@ defineProps<{
 </script>
 
 <template>
-    <span class="directory-prompt">{{ currentDir }} > </span>
+    <span class="directory-prompt">{{ currentDir }} >&nbsp;</span>
 </template>
 
 <style scoped>
 .directory-prompt {
-    color: green;
+    color: rgb(7, 189, 7);
     margin-right: 0.1rem;
 }
 </style>

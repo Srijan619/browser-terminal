@@ -43,5 +43,6 @@ const handleEnter = () => {
 .command-prompt {
     all: unset;
     flex: 2;
+    color: whitesmoke;
 }
 </style>

@@ -1,4 +1,6 @@
-export const zipDiffViewerProject = `
+import { marked } from "marked";
+
+export const zipDiffViewerProject = marked.parse(`
 # Hello Project Zip Diff Viewer
 
 Welcome to the **zip-diff-viewer** project! This application provides a user-friendly interface to visualize and compare the contents of ZIP files. Whether you're a developer looking to track changes between versions of your code, or a user who needs to analyze differences in file collections, this tool is designed to simplify the process.
@@ -12,4 +14,4 @@ Welcome to the **zip-diff-viewer** project! This application provides a user-fri
 
 ### Getting Started
 To get started with the **zip-diff-viewer**, visit the [GitHub repository](https://github.com/Srijan619/zip-diff-viewer) for installation instructions, usage details, and contribution guidelines.
-`
+`);

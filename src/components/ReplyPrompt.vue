@@ -7,12 +7,13 @@ defineProps<{
 </script>
 
 <template>
-    <span class="reply-prompt" v-html="reply"></span>
+    <div class="reply-prompt" v-html="reply"></div>
 </template>
 
-<style scoped>
+<style>
 .reply-prompt {
-    color: rgb(234, 229, 82);
+    color: rgb(230, 230, 250);
     margin-right: 0.1rem;
+    margin-left: 1rem;
 }
 </style>

@@ -1,8 +1,9 @@
 import { PromptInstance } from "../types";
-import { marked } from 'marked';
 import { useCommandPromptStore } from '../stores/globalStore';
-import { SAMPLE_PEM_KEY } from "./example_pem_key";
-import { zipDiffViewerProject } from "../projects/zipDiffViewer";
+import { SAMPLE_PEM_KEY } from "../staticMessages/examplePemKey";
+import { zipDiffViewerProject } from "../staticMessages/zipDiffViewer";
+import { WELCOME_MESSAGE } from "../staticMessages/welcomeMessage";
+import { NEATJS_PROJECT_DESCRIPTION } from "../staticMessages/Neat";
 
 const ROOT_DIR = '~';
 let CURRENT_DIR = ROOT_DIR;
@@ -16,10 +17,10 @@ const COMMAND_HELP = 'help';
 const AVAILABLE_DIRS = new Map();
 
 const PROJECT_MAP = new Map();
-PROJECT_MAP.set("zip-diff-viewer.md", marked.parse(zipDiffViewerProject));
-PROJECT_MAP.set("project2.md", "Project 2 was fairly complex")
+PROJECT_MAP.set("zip-diff-viewer.md", (zipDiffViewerProject));
+PROJECT_MAP.set("Neat.md", NEATJS_PROJECT_DESCRIPTION);
 // Add key-value pairs
-AVAILABLE_DIRS.set("bio.md", "Hello srijan here! Welcome to my world!");
+AVAILABLE_DIRS.set("bio.md", WELCOME_MESSAGE);
 AVAILABLE_DIRS.set("projects", PROJECT_MAP);
 AVAILABLE_DIRS.set("secret_keys.pem", SAMPLE_PEM_KEY);
 
@@ -52,7 +53,7 @@ const getCurrentDirName = (currentDir: string): string => {
 
 const isFile = (fileName: string): boolean => {
     // Check if the filename contains a dot, is not just a dot, and has a valid extension
-    const validExtensions = ['txt', 'md'];
+    const validExtensions = ['txt', 'md', 'pem'];
     const parts = fileName.split('.');
 
     // If there's no dot or only one part, it cannot be a file

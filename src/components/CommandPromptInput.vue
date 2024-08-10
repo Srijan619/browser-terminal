@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps, onMounted } from 'vue';
+import { ref, defineProps, onMounted, onUnmounted } from 'vue';
 import { useCommandPromptStore } from '../stores/globalStore';
 import { onUpdated } from 'vue';
 
@@ -10,13 +10,31 @@ const props = defineProps<{
 
 const store = useCommandPromptStore();
 const currentCommand = ref('');
+const isFocused = ref(true);
 
 // Create a reference for the input
 const commandInput = ref<HTMLInputElement | null>(null);
 
+let debounceTimeout: number | undefined;
+
+// Debounce function
+const debounce = (func: () => void, delay: number) => {
+    return () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = window.setTimeout(() => {
+            func();
+        }, delay);
+    };
+};
 // Focus the input on component mount
 onMounted(() => {
+    document.addEventListener('selectionchange', handleSelectionChange);
     focusInput();
+});
+
+// Cleanup event listeners
+onUnmounted(() => {
+    document.removeEventListener('selectionchange', handleSelectionChange);
 });
 
 onUpdated(() => {
@@ -28,15 +46,30 @@ const focusInput = () => {
     commandInput.value?.focus();
 };
 
+const blurInput = () => {
+    commandInput.value?.blur();
+};
+
 // Handle command input enter
 const handleEnter = () => {
     store.handleCommandInputEnter(props.id, currentCommand.value);
 };
+
+// Handle selection change
+const handleSelectionChange = debounce(() => {
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+        blurInput();
+    } else {
+        focusInput();
+    }
+}, 300); // Adjust the delay as needed
 </script>
 
 <template>
-    <input ref="commandInput" class="command-prompt" v-model="currentCommand" @keyup.enter="handleEnter"
-        :disabled="!props.enabled" />
+    <input ref="commandInput" class="command-prompt" v-model="currentCommand" autocorrect="off" autocapitalize="off"
+        spellcheck="false" @keyup.enter="handleEnter" :disabled="!props.enabled" @blur="isFocused = false"
+        @focus="isFocused = true" />
 </template>
 
 <style scoped>

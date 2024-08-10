@@ -21,7 +21,6 @@ defineProps<{
 <style scoped>
 .single-prompt-card {
     width: 100vw;
-    height: fit-content;
     display: flex;
     flex-direction: row;
 }

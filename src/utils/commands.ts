@@ -27,7 +27,7 @@ AVAILABLE_DIRS.set("projects", PROJECT_MAP);
 AVAILABLE_DIRS.set("secret_keys.pem", SAMPLE_PEM_KEY);
 
 const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HELP];
-const BAD_COMMAND_ERROR_MESSAGE = 'Command not found! Type <code>help</code> to know all options.';
+const BAD_COMMAND_ERROR_MESSAGE = '&nbsp;Command not found! Type <code>help</code> to know all options.';
 let PROMPT_INSTANCE: PromptInstance;
 
 const getCommandPromptStore = () => {
@@ -35,7 +35,7 @@ const getCommandPromptStore = () => {
 };
 
 const formatBadCommandMessage = (command: string) => {
-    let formattedMessage = (command && `<code>${command}</code> `) + BAD_COMMAND_ERROR_MESSAGE;
+    let formattedMessage = (command && `<code>${command}</code>`) + BAD_COMMAND_ERROR_MESSAGE;
     return marked.parse(formattedMessage).toString();
 }
 // Function to check if the command is allowed
@@ -45,11 +45,11 @@ const isInputCommandAllowed = (command: string): boolean => {
 };
 
 const commandPrefix = (command: string): string => {
-    return command?.split(' ')[0];
+    return command?.split(' ')[0].trim();
 }
 
 const commandSuffix = (command: string): string => {
-    return command?.split(' ')[1];
+    return command?.split(' ')[1].trim();
 }
 
 const getCurrentDirName = (currentDir: string): string => {
@@ -194,9 +194,13 @@ const handleDefaultCheck = () => {
     }
 }
 
+const setAndSanitizePromptInstance = (promptInstance: PromptInstance) => {
+    PROMPT_INSTANCE = promptInstance;
+    PROMPT_INSTANCE.command = PROMPT_INSTANCE.command.trim();
+}
 const handleCommand = (promptInstance: PromptInstance): void => {
-    PROMPT_INSTANCE = promptInstance
-    switch (commandPrefix(promptInstance.command)) {
+    setAndSanitizePromptInstance(promptInstance);
+    switch (commandPrefix(PROMPT_INSTANCE.command)) {
         case COMMAND_CLEAR:
             handleClearCommand();
             break;

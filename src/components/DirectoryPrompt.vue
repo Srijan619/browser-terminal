@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-    <span class="directory-prompt">{{ currentDir }}</span>
+    <span class="directory-prompt">{{ currentDir }} > </span>
 </template>
 
 <style scoped>

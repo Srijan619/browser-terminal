@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-    <span class="reply-prompt">{{ reply }}</span>
+    <span class="reply-prompt" v-html="reply"></span>
 </template>
 
 <style scoped>

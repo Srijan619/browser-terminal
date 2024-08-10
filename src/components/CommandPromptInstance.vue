@@ -14,7 +14,7 @@ console.log(PROMPT_INSTANCES)
     <div v-for="instance in PROMPT_INSTANCES" :key="instance.id">
         <DirectoryCommandPrompt :id="instance.id" :command="instance.command" :currentDir="instance.currentDir"
             :enabled="instance.enabled" />
-        <ReplyPrompt :reply="instance.reply" />
+        <ReplyPrompt :reply="instance.reply" v-if="instance.reply" />
     </div>
 </template>
 

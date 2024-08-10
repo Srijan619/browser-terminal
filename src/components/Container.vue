@@ -17,5 +17,7 @@ import CommandPromptInputInstance from './CommandPromptInstance.vue';
   display: flex;
   flex-direction: column;
   padding: 0.1rem;
+  max-height: 600px;
+  overflow: scroll;
 }
 </style>

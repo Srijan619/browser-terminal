@@ -4,7 +4,7 @@ import CommandPromptInput from './CommandPromptInput.vue';
 import { defineProps } from 'vue';
 
 defineProps<{
-    id: number;
+    id: string;
     command: string;
     currentDir: string;
     enabled: boolean;

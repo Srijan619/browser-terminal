@@ -2,18 +2,18 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid';
 import { PromptInstance } from '../types';
-import { handleCommand, CURRENT_DIR } from '../utils/commands';
+import { handleCommand } from '../utils/commands';
 import { WELCOME_MESSAGE } from "../staticMessages/welcomeMessage";
 
 export const useCommandPromptStore = defineStore('commandPrompt', () => {
     const PROMPT_INSTANCES = ref<PromptInstance[]>([]);
-
+    const CURRENT_DIR = ref('~');
     const emptyPromptInstance = (): PromptInstance => {
         return {
             id: uuidv4(),
             command: '',
             reply: '',
-            currentDir: CURRENT_DIR,
+            currentDir: CURRENT_DIR.value,
             enabled: true,
         } as PromptInstance;
     }
@@ -27,6 +27,15 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
         messagePromptInstance.enabled = false;
         messagePromptInstance.reply = WELCOME_MESSAGE.toString();
         PROMPT_INSTANCES.value.push(messagePromptInstance);
+        createNewPromptInstance();
+    }
+
+    const createNewPromptInstanceAndDisablePreviousInstance = (promptInstance: PromptInstance) => {
+        // Create a new prompt after handling input
+        createNewPromptInstance();
+        if (promptInstance) {
+            promptInstance.enabled = false; // Disable input after handling input
+        }
     }
 
     // Function to handle the enter keypress for a specific prompt
@@ -39,13 +48,21 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
         handleCommand(promptInstance);
 
         // Create a new prompt after handling input
-        createNewPromptInstance();
-        promptInstance.enabled = false; // Disable input after handling input
+        createNewPromptInstanceAndDisablePreviousInstance(promptInstance);
+    };
+
+    const handleCommandInputEnterServer = (promptId: string, currentCommand: string, callback: () => {}): void => {
+        const promptInstance = PROMPT_INSTANCES.value.find(instance => instance.id === promptId);
+        if (!promptInstance) return;
+
+        // Set the current command to the prompt instance
+        promptInstance.command = currentCommand;
+        callback();
     };
 
     // Initialize the first prompt instance
     createWelcomeMessagePrompt();
-    createNewPromptInstance();
+    //createNewPromptInstance();
 
-    return { PROMPT_INSTANCES, handleCommandInputEnter };
+    return { PROMPT_INSTANCES, CURRENT_DIR, handleCommandInputEnter, handleCommandInputEnterServer, createNewPromptInstanceAndDisablePreviousInstance };
 });

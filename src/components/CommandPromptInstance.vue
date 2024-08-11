@@ -4,7 +4,7 @@ import ReplyPrompt from './ReplyPrompt.vue';
 
 import { useCommandPromptStore } from '../stores/globalStore'
 import { storeToRefs } from 'pinia'
-// access the `store` variable anywhere in the component ✨
+
 const store = useCommandPromptStore()
 const { PROMPT_INSTANCES } = storeToRefs(store)
 </script>

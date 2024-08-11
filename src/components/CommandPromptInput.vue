@@ -2,6 +2,7 @@
 import { ref, defineProps, onMounted, onUnmounted } from 'vue';
 import { useCommandPromptStore } from '../stores/globalStore';
 import { onUpdated } from 'vue';
+import { sendInputToServer } from '../utils/commandsToServer';
 
 const props = defineProps<{
     id: string,
@@ -11,6 +12,7 @@ const props = defineProps<{
 const store = useCommandPromptStore();
 const currentCommand = ref('');
 const isFocused = ref(true);
+const PROMPT_INSTANCE = store.PROMPT_INSTANCES.find(instance => instance.id === props.id);
 
 // Create a reference for the input
 const commandInput = ref<HTMLInputElement | null>(null);
@@ -53,6 +55,7 @@ const blurInput = () => {
 // Handle command input enter
 const handleEnter = () => {
     store.handleCommandInputEnter(props.id, currentCommand.value);
+    //sendInputToServer(currentCommand.value, PROMPT_INSTANCE)
 };
 
 // Handle selection change
@@ -64,6 +67,7 @@ const handleSelectionChange = debounce(() => {
         focusInput();
     }
 }, 300); // Adjust the delay as needed
+
 </script>
 
 <template>

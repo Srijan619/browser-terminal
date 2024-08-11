@@ -7,7 +7,6 @@ import { NEATJS_PROJECT_DESCRIPTION } from "../staticMessages/Neat";
 import { marked } from "marked";
 
 const ROOT_DIR = '~';
-let CURRENT_DIR = ROOT_DIR;
 const COMMAND_LS = 'ls';
 const COMMAND_CD = 'cd';
 const COMMAND_PWD = 'pwd';
@@ -138,12 +137,12 @@ const handleCdCommand = (): void => {
     const changeDir = commandSuffix(PROMPT_INSTANCE.command);
     if (!changeDir) {
         // Change to root always if nothing provided
-        CURRENT_DIR = ROOT_DIR;
+        getCommandPromptStore().CURRENT_DIR = ROOT_DIR;
     }
     else if (!AVAILABLE_DIRS.has(changeDir)) {
         PROMPT_INSTANCE.reply = `No such directory!`
     } else {
-        CURRENT_DIR += "/" + changeDir;
+        getCommandPromptStore().CURRENT_DIR += "/" + changeDir;
     }
 }
 
@@ -184,6 +183,10 @@ const handleTopCommand = () => {
     }
 }
 
+const handlePwdCommand = () => {
+    PROMPT_INSTANCE.reply = CURRENT_DIR;
+}
+
 const handleDefaultCheck = () => {
     if (!PROMPT_INSTANCE.command) {
         return; //
@@ -218,6 +221,9 @@ const handleCommand = (promptInstance: PromptInstance): void => {
             break;
         case COMMAND_TOP:
             handleTopCommand();
+            break;
+        case COMMAND_PWD:
+            handlePwdCommand();
             break;
         default:
             handleDefaultCheck();

@@ -8,6 +8,7 @@ import { WELCOME_MESSAGE } from "../staticMessages/welcomeMessage";
 export const useCommandPromptStore = defineStore('commandPrompt', () => {
     const PROMPT_INSTANCES = ref<PromptInstance[]>([]);
     const CURRENT_DIR = ref('~');
+    const TERMINAL_MODE = ref('client');
     const emptyPromptInstance = (): PromptInstance => {
         return {
             id: uuidv4(),
@@ -22,15 +23,20 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
         PROMPT_INSTANCES.value.push(emptyPromptInstance());
     };
 
-    const createWelcomeMessagePrompt = (): void => {
+    const createMessagePrompt = (message: string): void => {
         const messagePromptInstance = emptyPromptInstance();
         messagePromptInstance.enabled = false;
-        messagePromptInstance.reply = WELCOME_MESSAGE.toString();
+        messagePromptInstance.reply = message;
         PROMPT_INSTANCES.value.push(messagePromptInstance);
-        createNewPromptInstance();
     }
 
-    const createNewPromptInstanceAndDisablePreviousInstance = (promptInstance: PromptInstance) => {
+    const reset = () => {
+        debugger
+        PROMPT_INSTANCES.value = [];
+        createMessagePrompt(WELCOME_MESSAGE.toString());
+    }
+
+    const createNewPromptInstanceAndDisablePreviousInstance = (promptInstance?: PromptInstance) => {
         // Create a new prompt after handling input
         createNewPromptInstance();
         if (promptInstance) {
@@ -61,8 +67,9 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
     };
 
     // Initialize the first prompt instance
-    createWelcomeMessagePrompt();
-    //createNewPromptInstance();
+    createMessagePrompt(WELCOME_MESSAGE.toString());
+    createMessagePrompt("Welcome to terminal: " + TERMINAL_MODE.value);
+    createNewPromptInstance();
 
-    return { PROMPT_INSTANCES, CURRENT_DIR, handleCommandInputEnter, handleCommandInputEnterServer, createNewPromptInstanceAndDisablePreviousInstance };
+    return { PROMPT_INSTANCES, CURRENT_DIR, TERMINAL_MODE, handleCommandInputEnter, handleCommandInputEnterServer, createNewPromptInstanceAndDisablePreviousInstance, createMessagePrompt, reset };
 });

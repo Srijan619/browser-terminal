@@ -21,12 +21,14 @@ const sendInputToServer = (input: string, promptInstance: PromptInstance) => {
 
 // Handle output from the server
 socket.on('output', (data: string) => {
+    if (getCommandPromptStore().TERMINAL_MODE !== 'server') return;
     console.log("Client: Output from server", data);
     PROMPT_INSTANCE.reply = data; // Assuming reply is of type string
     getCommandPromptStore().createNewPromptInstanceAndDisablePreviousInstance(PROMPT_INSTANCE);
 });
 
 socket.on('dirChangeFound', (data: string) => {
+    if (getCommandPromptStore().TERMINAL_MODE !== 'server') return;
     console.log("CLient dir change")
     //PROMPT_INSTANCE.reply = data; // Assuming reply is of type string
     getCommandPromptStore().CURRENT_DIR = data;

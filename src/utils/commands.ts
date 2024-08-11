@@ -184,7 +184,7 @@ const handleTopCommand = () => {
 }
 
 const handlePwdCommand = () => {
-    PROMPT_INSTANCE.reply = CURRENT_DIR;
+    PROMPT_INSTANCE.reply = getCommandPromptStore().CURRENT_DIR;
 }
 
 const handleDefaultCheck = () => {
@@ -231,4 +231,4 @@ const handleCommand = (promptInstance: PromptInstance): void => {
     }
 }
 
-export { handleCommand, CURRENT_DIR }
+export { handleCommand }

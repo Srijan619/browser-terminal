@@ -4,6 +4,7 @@ import { useCommandPromptStore } from '../stores/globalStore';
 import { onUpdated } from 'vue';
 import { sendInputToServer } from '../utils/commandsToServer';
 
+
 const props = defineProps<{
     id: string,
     enabled: boolean;
@@ -54,8 +55,15 @@ const blurInput = () => {
 
 // Handle command input enter
 const handleEnter = () => {
-    store.handleCommandInputEnter(props.id, currentCommand.value);
-    //sendInputToServer(currentCommand.value, PROMPT_INSTANCE)
+    if (store.TERMINAL_MODE === 'client') {
+        console.log("Client mode..")
+        store.handleCommandInputEnter(props.id, currentCommand.value);
+    } else {
+        console.log("Server mode..")
+        if (PROMPT_INSTANCE) {
+            sendInputToServer(currentCommand.value, PROMPT_INSTANCE)
+        }
+    }
 };
 
 // Handle selection change

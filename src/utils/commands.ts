@@ -13,6 +13,7 @@ const COMMAND_PWD = 'pwd';
 const COMMAND_CLEAR = 'clear';
 const COMMAND_CAT = 'cat';
 const COMMAND_TOP = 'top';
+const COMMAND_HISTORY = 'history';
 const COMMAND_HELP = 'help';
 
 const AVAILABLE_DIRS = new Map();
@@ -25,7 +26,7 @@ AVAILABLE_DIRS.set("bio.md", WELCOME_MESSAGE);
 AVAILABLE_DIRS.set("projects", PROJECT_MAP);
 AVAILABLE_DIRS.set("secret_keys.pem", SAMPLE_PEM_KEY);
 
-const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HELP];
+const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HELP, COMMAND_HISTORY];
 const BAD_COMMAND_ERROR_MESSAGE = '&nbsp;Command not found! Type <code>help</code> to know all options.';
 let PROMPT_INSTANCE: PromptInstance;
 
@@ -44,11 +45,11 @@ const isInputCommandAllowed = (command: string): boolean => {
 };
 
 const commandPrefix = (command: string): string => {
-    return command?.split(' ')[0].trim();
+    return command?.split(' ')[0]?.trim();
 }
 
 const commandSuffix = (command: string): string => {
-    return command?.split(' ')[1].trim();
+    return command?.split(' ')[1]?.trim();
 }
 
 const getCurrentDirName = (currentDir: string): string => {
@@ -187,6 +188,10 @@ const handlePwdCommand = () => {
     PROMPT_INSTANCE.reply = getCommandPromptStore().CURRENT_DIR;
 }
 
+const handleHistoryCommand = () => {
+    PROMPT_INSTANCE.reply = marked.parse(getCommandPromptStore().COMMAND_HISTORY.join('<br>')).toString();
+}
+
 const handleDefaultCheck = () => {
     if (!PROMPT_INSTANCE.command) {
         return; //
@@ -203,6 +208,7 @@ const setAndSanitizePromptInstance = (promptInstance: PromptInstance) => {
 }
 const handleCommand = (promptInstance: PromptInstance): void => {
     setAndSanitizePromptInstance(promptInstance);
+    getCommandPromptStore().COMMAND_HISTORY.push(promptInstance.command);
     switch (commandPrefix(PROMPT_INSTANCE.command)) {
         case COMMAND_CLEAR:
             handleClearCommand();
@@ -224,6 +230,9 @@ const handleCommand = (promptInstance: PromptInstance): void => {
             break;
         case COMMAND_PWD:
             handlePwdCommand();
+            break;
+        case COMMAND_HISTORY:
+            handleHistoryCommand();
             break;
         default:
             handleDefaultCheck();

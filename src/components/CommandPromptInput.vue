@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, defineProps, onMounted, onUnmounted } from 'vue';
 import { useCommandPromptStore } from '../stores/globalStore';
-import { onUpdated } from 'vue';
 import { sendInputToServer } from '../utils/commandsToServer';
 
 
@@ -12,7 +11,6 @@ const props = defineProps<{
 
 const store = useCommandPromptStore();
 const currentCommand = ref('');
-const isFocused = ref(true);
 const PROMPT_INSTANCE = store.PROMPT_INSTANCES.find(instance => instance.id === props.id);
 
 // Create a reference for the input
@@ -31,6 +29,7 @@ const debounce = (func: () => void, delay: number) => {
 };
 // Focus the input on component mount
 onMounted(() => {
+    // As we constantly put focus to input, add selection change to allow user to select text if it is needed
     document.addEventListener('selectionchange', handleSelectionChange);
     focusInput();
 });
@@ -40,9 +39,9 @@ onUnmounted(() => {
     document.removeEventListener('selectionchange', handleSelectionChange);
 });
 
-onUpdated(() => {
-    focusInput();
-})
+// onUpdated(() => {
+//     focusInput();
+// })
 
 // Function to focus the input
 const focusInput = () => {
@@ -76,12 +75,37 @@ const handleSelectionChange = debounce(() => {
     }
 }, 300); // Adjust the delay as needed
 
+const HISTORY_COUNTER = ref(-1);
+
+const handleShowHistoryUp = () => {
+    if (store.COMMAND_HISTORY.length === 0) return; // No history available
+
+    blurInput();
+    // Move up in history
+    if (HISTORY_COUNTER.value < store.COMMAND_HISTORY.length - 1) {
+        HISTORY_COUNTER.value++;
+        currentCommand.value = store.COMMAND_HISTORY[store.COMMAND_HISTORY.length - 1 - HISTORY_COUNTER.value].toString();
+    }
+};
+
+const handleShowHistoryDown = () => {
+    if (store.COMMAND_HISTORY.length === 0 || HISTORY_COUNTER.value <= 0) {
+        return; // Do nothing if no history has been traversed or reached the end
+    }
+
+    blurInput();
+    // Move down in history
+    currentCommand.value = store.COMMAND_HISTORY[store.COMMAND_HISTORY.length - HISTORY_COUNTER.value].toString();
+    HISTORY_COUNTER.value--;
+};
+
+
 </script>
 
 <template>
     <input ref="commandInput" class="command-prompt" v-model="currentCommand" autocorrect="off" autocapitalize="off"
-        spellcheck="false" @keyup.enter="handleEnter" :disabled="!props.enabled" @blur="isFocused = false"
-        @focus="isFocused = true" />
+        spellcheck="false" @keyup.enter="handleEnter" @keyup.up.prevent="handleShowHistoryUp"
+        @keyup.down.prevent="handleShowHistoryDown" :disabled="!props.enabled" />
 </template>
 
 <style scoped>

@@ -9,6 +9,7 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
     const PROMPT_INSTANCES = ref<PromptInstance[]>([]);
     const CURRENT_DIR = ref('~');
     const TERMINAL_MODE = ref('client');
+    const COMMAND_HISTORY = ref<String[]>([]);
     const emptyPromptInstance = (): PromptInstance => {
         return {
             id: uuidv4(),
@@ -71,5 +72,5 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
     createMessagePrompt("Welcome to terminal: " + TERMINAL_MODE.value);
     createNewPromptInstance();
 
-    return { PROMPT_INSTANCES, CURRENT_DIR, TERMINAL_MODE, handleCommandInputEnter, handleCommandInputEnterServer, createNewPromptInstanceAndDisablePreviousInstance, createMessagePrompt, reset };
+    return { PROMPT_INSTANCES, CURRENT_DIR, TERMINAL_MODE, COMMAND_HISTORY, handleCommandInputEnter, handleCommandInputEnterServer, createNewPromptInstanceAndDisablePreviousInstance, createMessagePrompt, reset };
 });

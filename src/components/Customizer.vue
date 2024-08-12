@@ -120,6 +120,31 @@ onBeforeUnmount(() => {
     position: absolute;
     right: 0;
     z-index: 1000;
+    opacity: 0;
+    /* Start with the form hidden */
+    transform: scale(0.5);
+    /* Start with a smaller scale */
+    animation: popIn 0.5s forwards;
+    /* Change animation duration as needed */
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+        /* Start small */
+    }
+
+    50% {
+        opacity: 0.5;
+        /* Fade in */
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        /* End at normal scale */
+    }
 }
 
 .setting {
@@ -190,6 +215,5 @@ select {
 
 .save-button:hover {
     background-color: #0056b3;
-}
-</style>
+}</style>
   

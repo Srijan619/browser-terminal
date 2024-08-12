@@ -32,7 +32,6 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
     }
 
     const reset = () => {
-        debugger
         PROMPT_INSTANCES.value = [];
         createMessagePrompt(WELCOME_MESSAGE.toString());
     }

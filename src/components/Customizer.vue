@@ -1,44 +1,54 @@
 <template>
-    <button @click="togglePanel" class="setting" ref="button">⚙️</button>
-    <div class="customization-form" v-if="showPanel" ref="panel">
-        <h2>Customize Your Terminal</h2>
-        <form>
-            <div class="form-group">
-                <label for="background-color">Terminal Background Color</label>
-                <input id="background-color" type="color" v-model="TERMINAL_BACKGROUND_COLOR" />
-            </div>
+    <div class="main-container">
+        <button @click="togglePanel" class="setting" ref="button">⚙️</button>
+        <div class="customization-form" v-if="showPanel" ref="panel">
+            <h2>Customize Your Terminal</h2>
+            <form>
+                <div class="form-group">
+                    <label for="background-color">Default Theme</label>
+                    <select @change="applyTheme">
+                        <option v-for="theme in availableThemes" :key="theme">{{ theme }}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="background-color">Terminal Background Color</label>
+                    <input id="background-color" type="color" v-model="TERMINAL_BACKGROUND_COLOR" />
+                </div>
 
-            <div class="form-group">
-                <label for="reply-color">Terminal Reply Color</label>
-                <input id="reply-color" type="color" v-model="TERMINAL_REPLY_COLOR" />
-            </div>
+                <div class="form-group">
+                    <label for="reply-color">Terminal Reply Color</label>
+                    <input id="reply-color" type="color" v-model="TERMINAL_REPLY_COLOR" />
+                </div>
 
-            <div class="form-group">
-                <label for="directory-prompt-color">Directory Prompt Color</label>
-                <input id="directory-prompt-color" type="color" v-model="TERMINAL_DIRECTORY_PROMPT_COLOR" />
-            </div>
+                <div class="form-group">
+                    <label for="directory-prompt-color">Directory Prompt Color</label>
+                    <input id="directory-prompt-color" type="color" v-model="TERMINAL_DIRECTORY_PROMPT_COLOR" />
+                </div>
 
-            <div class="form-group">
-                <label for="command-prompt-color">Command Prompt Color</label>
-                <input id="command-prompt-color" type="color" v-model="TERMINAL_COMMAND_PROMPT_COLOR" />
-            </div>
+                <div class="form-group">
+                    <label for="command-prompt-color">Command Prompt Color</label>
+                    <input id="command-prompt-color" type="color" v-model="TERMINAL_COMMAND_PROMPT_COLOR" />
+                </div>
 
-            <div class="form-group">
-                <label for="ls-file-color">LS File Color</label>
-                <input id="ls-file-color" type="color" v-model="TERMINAL_LS_FILE_COLOR" />
-            </div>
+                <div class="form-group">
+                    <label for="ls-file-color">LS File Color</label>
+                    <input id="ls-file-color" type="color" v-model="TERMINAL_LS_FILE_COLOR" />
+                </div>
 
-            <div class="form-group">
-                <label for="ls-folder-color">LS Folder Color</label>
-                <input id="ls-folder-color" type="color" v-model="TERMINAL_LS_FOLDER_COLOR" />
-            </div>
-        </form>
+                <div class="form-group">
+                    <label for="ls-folder-color">LS Folder Color</label>
+                    <input id="ls-folder-color" type="color" v-model="TERMINAL_LS_FOLDER_COLOR" />
+                </div>
+            </form>
+        </div>
     </div>
 </template>
   
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, computed } from 'vue';
 import { useCustomizationStore } from '../stores/customizationStore';
+import { themes } from '../assets/themes';
 import { storeToRefs } from 'pinia'
 
 const store = useCustomizationStore();
@@ -54,6 +64,11 @@ const panel = ref<HTMLDivElement | null>(null);
 const button = ref<HTMLButtonElement | null>(null);
 
 const togglePanel = () => {
+    if (button.value?.classList.contains('circle-animation')) {
+        button.value.classList.remove('circle-animation');
+    } else {
+        button.value?.classList.add('circle-animation');
+    }
     showPanel.value = !showPanel.value;
 };
 
@@ -61,8 +76,18 @@ const togglePanel = () => {
 const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as Node;
     if (panel.value && button.value && !panel.value.contains(target) && !button.value.contains(target)) {
-        showPanel.value = false;
+        togglePanel()
     }
+};
+
+const availableThemes = computed(() => {
+    return Object.keys(themes);
+})
+
+const applyTheme = (event: Event) => {
+    const target = event.target as HTMLSelectElement; // Type assertion here
+    const themeName = target.value as keyof typeof themes;
+    store.applyTheme(themeName);
 };
 
 onMounted(() => {
@@ -75,15 +100,22 @@ onBeforeUnmount(() => {
 </script>
   
 <style scoped>
-.customization-form {
+.main-container {
+    position: absolute;
+    top: 0;
+    right: 0;
     max-width: 400px;
     margin: 0 auto;
+}
+
+.customization-form {
+    width: 400px;
+    max-width: 400px;
     padding: 20px;
     background-color: #f7f7f7;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     position: absolute;
-    top: 0;
     right: 0;
     z-index: 1000;
 }
@@ -91,12 +123,21 @@ onBeforeUnmount(() => {
 .setting {
     border: transparent;
     cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 0;
+    position: relative;
     margin: 1rem;
-    transform: scale(2);
+    transform: scale(1.5);
     background-color: transparent;
+}
+
+.setting.circle-animation {
+    animation: mymove 5s .5;
+
+}
+
+@keyframes mymove {
+    50% {
+        transform: rotate(180deg) scale(1.5);
+    }
 }
 
 h2 {
@@ -118,6 +159,14 @@ label {
 }
 
 input[type="color"] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex: 1;
+}
+
+select {
     width: 100%;
     padding: 5px;
     border: 1px solid #ccc;

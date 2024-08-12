@@ -62,7 +62,6 @@ const { TERMINAL_BACKGROUND_COLOR,
 const showPanel = ref(false);
 const panel = ref<HTMLDivElement | null>(null);
 const button = ref<HTMLButtonElement | null>(null);
-debugger
 const selectedTheme = ref(store.TERMINAL_DEFAULT_THEME);
 
 const togglePanel = () => {
@@ -215,5 +214,6 @@ select {
 
 .save-button:hover {
     background-color: #0056b3;
-}</style>
+}
+</style>
   

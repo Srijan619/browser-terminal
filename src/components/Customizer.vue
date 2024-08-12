@@ -6,7 +6,7 @@
             <form>
                 <div class="form-group">
                     <label for="background-color">Default Theme</label>
-                    <select @change="applyTheme">
+                    <select @change="applyTheme" v-model="selectedTheme">
                         <option v-for="theme in availableThemes" :key="theme">{{ theme }}
                         </option>
                     </select>
@@ -62,6 +62,8 @@ const { TERMINAL_BACKGROUND_COLOR,
 const showPanel = ref(false);
 const panel = ref<HTMLDivElement | null>(null);
 const button = ref<HTMLButtonElement | null>(null);
+debugger
+const selectedTheme = ref(store.TERMINAL_DEFAULT_THEME);
 
 const togglePanel = () => {
     if (button.value?.classList.contains('circle-animation')) {

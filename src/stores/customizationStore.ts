@@ -11,6 +11,9 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
     const TERMINAL_LS_FILE_COLOR = ref(themes.darkMode.TERMINAL_LS_FILE_COLOR);
     const TERMINAL_LS_FOLDER_COLOR = ref(themes.darkMode.TERMINAL_LS_FOLDER_COLOR);
 
+    // THEME
+    const TERMINAL_DEFAULT_THEME = ref<keyof typeof themes>('darkMode');
+
     // Method to update the customization values based on a JSON object
     const updateCustomization = (customizationData: Record<string, string>) => {
         if (customizationData.TERMINAL_BACKGROUND_COLOR) {
@@ -31,6 +34,11 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
         if (customizationData.TERMINAL_LS_FOLDER_COLOR) {
             TERMINAL_LS_FOLDER_COLOR.value = customizationData.TERMINAL_LS_FOLDER_COLOR;
         }
+
+        // UPDATE THEME
+        if (customizationData.TERMINAL_DEFAULT_THEME) {
+            TERMINAL_DEFAULT_THEME.value = customizationData.TERMINAL_DEFAULT_THEME as keyof typeof themes;
+        }
         saveToLocalStorage();
     };
 
@@ -43,6 +51,7 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
             TERMINAL_COMMAND_PROMPT_COLOR: TERMINAL_COMMAND_PROMPT_COLOR.value,
             TERMINAL_LS_FILE_COLOR: TERMINAL_LS_FILE_COLOR.value,
             TERMINAL_LS_FOLDER_COLOR: TERMINAL_LS_FOLDER_COLOR.value,
+            TERMINAL_DEFAULT_THEME: TERMINAL_DEFAULT_THEME.value,
         };
     };
 
@@ -88,6 +97,7 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
         TERMINAL_COMMAND_PROMPT_COLOR,
         TERMINAL_LS_FILE_COLOR,
         TERMINAL_LS_FOLDER_COLOR,
+        TERMINAL_DEFAULT_THEME,
         updateCustomization,
         getCustomizationAsJson,
         applyTheme,

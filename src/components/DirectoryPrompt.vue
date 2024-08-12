@@ -13,7 +13,6 @@ defineProps<{
 
 <style scoped>
 .directory-prompt {
-    color: rgb(7, 189, 7);
     margin-right: 0.1rem;
 }
 </style>

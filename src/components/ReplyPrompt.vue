@@ -12,7 +12,7 @@ defineProps<{
 
 <style>
 .reply-prompt {
-    color: rgb(230, 230, 250);
+    color: inherit;
     margin-right: 0.1rem;
     margin-left: 1rem;
 }

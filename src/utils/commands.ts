@@ -1,5 +1,6 @@
 import { PromptInstance } from "../types";
 import { useCommandPromptStore } from '../stores/globalStore';
+import { useCustomizationStore } from '../stores/customizationStore';
 import { SAMPLE_PEM_KEY } from "../staticMessages/examplePemKey";
 import { zipDiffViewerProject } from "../staticMessages/zipDiffViewer";
 import { WELCOME_MESSAGE } from "../staticMessages/welcomeMessage";
@@ -32,6 +33,10 @@ let PROMPT_INSTANCE: PromptInstance;
 
 const getCommandPromptStore = () => {
     return useCommandPromptStore();
+};
+
+const getCustomizationStore = () => {
+    return useCustomizationStore();
 };
 
 const formatBadCommandMessage = (command: string) => {
@@ -70,6 +75,18 @@ const isFile = (fileName: string): boolean => {
     if (!extension) return false;
     return validExtensions.includes(extension.toLowerCase());
 };
+
+const formatLsReply = (reply: string) => {
+    const formattedReply = [] as string[];
+    reply?.split(' ').forEach(r => {
+        if (!isFile(r)) {
+            formattedReply.push(`<span style="color: ${getCustomizationStore().TERMINAL_LS_FOLDER_COLOR};">${r}</span>`)
+        } else {
+            formattedReply.push(`<span style="color:${getCustomizationStore().TERMINAL_LS_FILE_COLOR};">${r}</span>`)
+        }
+    })
+    return marked.parse(formattedReply.join(' '))
+}
 
 // Function to filter only directories (non-files) in the current directory
 const getFileRecursively = (currentDirName: string, currentDirContent: any = AVAILABLE_DIRS): (string | Map<string, any>)[] => {
@@ -126,12 +143,14 @@ const handleHelpCommand = (): void => {
 
 const handleLsCommand = (): void => {
     const currentDirName = getCurrentDirName(PROMPT_INSTANCE.currentDir)
+    let reply = '';
     if (currentDirName && AVAILABLE_DIRS.has(currentDirName)) {
         const dirMappedString = mapDirsToString(getFileRecursively(currentDirName));
-        PROMPT_INSTANCE.reply = dirMappedString ? dirMappedString : '';
+        reply = dirMappedString ? dirMappedString : '';
     } else {
-        PROMPT_INSTANCE.reply = Array.from(AVAILABLE_DIRS.keys()).join(' ');
+        reply = Array.from(AVAILABLE_DIRS.keys()).join(' ');
     }
+    PROMPT_INSTANCE.reply = formatLsReply(reply).toString();
 }
 
 const handleCdCommand = (): void => {

@@ -14,6 +14,5 @@ defineProps<{
 <style scoped>
 .directory-prompt {
     margin-right: 0.1rem;
-    margin-left: 2rem;
 }
 </style>

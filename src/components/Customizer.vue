@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
     border: transparent;
     cursor: pointer;
     position: relative;
-    margin: 1rem;
+    margin: 1rem .5rem 0 0;
     transform: scale(1.5);
     background-color: transparent;
 }

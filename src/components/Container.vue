@@ -23,7 +23,6 @@ const { TERMINAL_BACKGROUND_COLOR, TERMINAL_REPLY_COLOR, TERMINAL_DIRECTORY_PROM
   flex-direction: column;
   padding: 0.1rem;
   overflow-y: scroll;
-  margin-left: 1rem;
 }
 
 .directory-prompt {

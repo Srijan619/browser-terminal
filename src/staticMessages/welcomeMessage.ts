@@ -5,15 +5,13 @@ export const WELCOME_MESSAGE = marked.parse(`
 
 Hello! I'm Srijan, and I'm excited to share my work with you. Below is a little bird to brighten your day:
 
-<div class="bird">
-<pre>
+<pre class="bird">
       \\
        (o>
     \\_//)
      \_/_)
       _|_
 </pre>
-</div>
 
 What does this terminal support?
 

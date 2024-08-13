@@ -24,16 +24,19 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
         PROMPT_INSTANCES.value.push(emptyPromptInstance());
     };
 
-    const createMessagePrompt = (message: string): void => {
+    const createMessagePrompt = (message: string, cmd?: string): void => {
         const messagePromptInstance = emptyPromptInstance();
         messagePromptInstance.enabled = false;
         messagePromptInstance.reply = message;
+        messagePromptInstance.command = cmd || '';
         PROMPT_INSTANCES.value.push(messagePromptInstance);
     }
 
     const reset = () => {
         PROMPT_INSTANCES.value = [];
-        createMessagePrompt(WELCOME_MESSAGE.toString());
+        createMessagePrompt(WELCOME_MESSAGE.toString(), "cat bio.md");
+        createMessagePrompt("Welcome to terminal: " + TERMINAL_MODE.value);
+        createNewPromptInstance();
     }
 
     const createNewPromptInstanceAndDisablePreviousInstance = (promptInstance?: PromptInstance) => {
@@ -67,9 +70,7 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
     };
 
     // Initialize the first prompt instance
-    createMessagePrompt(WELCOME_MESSAGE.toString());
-    createMessagePrompt("Welcome to terminal: " + TERMINAL_MODE.value);
-    createNewPromptInstance();
+    reset();
 
     return { PROMPT_INSTANCES, CURRENT_DIR, TERMINAL_MODE, COMMAND_HISTORY, handleCommandInputEnter, handleCommandInputEnterServer, createNewPromptInstanceAndDisablePreviousInstance, createMessagePrompt, reset };
 });

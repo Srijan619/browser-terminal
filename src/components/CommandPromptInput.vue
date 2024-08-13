@@ -10,8 +10,8 @@ const props = defineProps<{
 }>();
 
 const store = useCommandPromptStore();
-const currentCommand = ref('');
 const PROMPT_INSTANCE = store.PROMPT_INSTANCES.find(instance => instance.id === props.id);
+const currentCommand = ref(PROMPT_INSTANCE?.command || '');
 
 // Create a reference for the input
 const commandInput = ref<HTMLInputElement | null>(null);

@@ -1,10 +1,7 @@
 import { PromptInstance } from "../types";
 import { useCommandPromptStore } from '../stores/globalStore';
 import { useCustomizationStore } from '../stores/customizationStore';
-import { SAMPLE_PEM_KEY } from "../staticMessages/examplePemKey";
-import { zipDiffViewerProject } from "../staticMessages/zipDiffViewer";
-import { WELCOME_MESSAGE } from "../staticMessages/welcomeMessage";
-import { NEATJS_PROJECT_DESCRIPTION } from "../staticMessages/Neat";
+import { useFilesStore } from '../stores/filesStore';
 import { marked } from "marked";
 
 const ROOT_DIR = '~';
@@ -15,19 +12,10 @@ const COMMAND_CLEAR = 'clear';
 const COMMAND_CAT = 'cat';
 const COMMAND_TOP = 'top';
 const COMMAND_HISTORY = 'history';
+const COMMAND_TOUCH = 'touch';
 const COMMAND_HELP = 'help';
 
-const AVAILABLE_DIRS = new Map();
-
-const PROJECT_MAP = new Map();
-PROJECT_MAP.set("zip-diff-viewer.md", (zipDiffViewerProject));
-PROJECT_MAP.set("Neat.md", NEATJS_PROJECT_DESCRIPTION);
-// Add key-value pairs
-AVAILABLE_DIRS.set("bio.md", WELCOME_MESSAGE);
-AVAILABLE_DIRS.set("projects", PROJECT_MAP);
-AVAILABLE_DIRS.set("secret_keys.pem", SAMPLE_PEM_KEY);
-
-const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HELP, COMMAND_HISTORY];
+const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HISTORY, COMMAND_TOUCH, COMMAND_HELP];
 const BAD_COMMAND_ERROR_MESSAGE = '&nbsp;Command not found! Type <code>help</code> to know all options.';
 let PROMPT_INSTANCE: PromptInstance;
 
@@ -37,6 +25,10 @@ const getCommandPromptStore = () => {
 
 const getCustomizationStore = () => {
     return useCustomizationStore();
+};
+
+const getFilesStore = () => {
+    return useFilesStore();
 };
 
 const formatBadCommandMessage = (command: string) => {
@@ -57,8 +49,9 @@ const commandSuffix = (command: string): string => {
     return command?.split(' ')[1]?.trim();
 }
 
-const getCurrentDirName = (currentDir: string): string => {
-    const allDirs = currentDir.split('/');
+const getCurrentDirName = (currentDir?: string): string => {
+    let currDir = currentDir || getCommandPromptStore().CURRENT_DIR;
+    const allDirs = currDir.split('/');
     return allDirs[allDirs.length - 1];
 }
 
@@ -89,7 +82,7 @@ const formatLsReply = (reply: string) => {
 }
 
 // Function to filter only directories (non-files) in the current directory
-const getFileRecursively = (currentDirName: string, currentDirContent: any = AVAILABLE_DIRS): (string | Map<string, any>)[] => {
+const getFileRecursively = (currentDirName: string, currentDirContent: any = getFilesStore().AVAILABLE_DIRS): (string | Map<string, any>)[] => {
     if (!currentDirContent) return [];
 
     // Try to get the directory content directly from the map if possible
@@ -142,13 +135,13 @@ const handleHelpCommand = (): void => {
 }
 
 const handleLsCommand = (): void => {
-    const currentDirName = getCurrentDirName(PROMPT_INSTANCE.currentDir)
+    const currentDirName = getCurrentDirName()
     let reply = '';
-    if (currentDirName && AVAILABLE_DIRS.has(currentDirName)) {
+    if (currentDirName && getFilesStore().AVAILABLE_DIRS.has(currentDirName)) {
         const dirMappedString = mapDirsToString(getFileRecursively(currentDirName));
         reply = dirMappedString ? dirMappedString : '';
     } else {
-        reply = Array.from(AVAILABLE_DIRS.keys()).join(' ');
+        reply = Array.from(getFilesStore().AVAILABLE_DIRS.keys()).join(' ');
     }
     PROMPT_INSTANCE.reply = formatLsReply(reply).toString();
 }
@@ -159,7 +152,7 @@ const handleCdCommand = (): void => {
         // Change to root always if nothing provided
         getCommandPromptStore().CURRENT_DIR = ROOT_DIR;
     }
-    else if (!AVAILABLE_DIRS.has(changeDir)) {
+    else if (!getFilesStore().AVAILABLE_DIRS.has(changeDir)) {
         PROMPT_INSTANCE.reply = `No such directory!`
     } else {
         getCommandPromptStore().CURRENT_DIR += "/" + changeDir;
@@ -211,6 +204,20 @@ const handleHistoryCommand = () => {
     PROMPT_INSTANCE.reply = marked.parse(getCommandPromptStore().COMMAND_HISTORY.join('<br>')).toString();
 }
 
+const handleTouchCommand = () => {
+    const fileName = commandSuffix(PROMPT_INSTANCE.command);
+
+    if (!fileName) {
+        PROMPT_INSTANCE.reply = "Please provide a filename for touch command."
+        return;
+    }
+    if (isFile(fileName)) {
+        useFilesStore().addFile(fileName, "Something", [getCurrentDirName()])
+    } else {
+        useFilesStore().addFolder(fileName, [getCurrentDirName()])
+    }
+}
+
 const handleDefaultCheck = () => {
     if (!PROMPT_INSTANCE.command) {
         return; //
@@ -225,6 +232,7 @@ const setAndSanitizePromptInstance = (promptInstance: PromptInstance) => {
     PROMPT_INSTANCE = promptInstance;
     PROMPT_INSTANCE.command = PROMPT_INSTANCE.command.trim();
 }
+
 const handleCommand = (promptInstance: PromptInstance): void => {
     setAndSanitizePromptInstance(promptInstance);
     getCommandPromptStore().COMMAND_HISTORY.push(promptInstance.command);
@@ -252,6 +260,9 @@ const handleCommand = (promptInstance: PromptInstance): void => {
             break;
         case COMMAND_HISTORY:
             handleHistoryCommand();
+            break;
+        case COMMAND_TOUCH:
+            handleTouchCommand();
             break;
         default:
             handleDefaultCheck();

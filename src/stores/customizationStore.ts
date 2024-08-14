@@ -58,12 +58,12 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
     // Method to save the current settings to localStorage
     const saveToLocalStorage = () => {
         const customizationJson = getCustomizationAsJson();
-        localStorage.setItem('customizer', JSON.stringify(customizationJson));
+        localStorage.setItem('BROWSER_TERMINAL_CUSTOMIZER', JSON.stringify(customizationJson));
     };
 
     // Initialization: Check if customization settings exist in localStorage
     const initFromLocalStorage = () => {
-        const storedCustomization = localStorage.getItem('customizer');
+        const storedCustomization = localStorage.getItem('BROWSER_TERMINAL_CUSTOMIZER');
         if (storedCustomization) {
             const customizationData = JSON.parse(storedCustomization);
             updateCustomization(customizationData);

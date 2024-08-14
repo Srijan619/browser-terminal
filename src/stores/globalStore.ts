@@ -10,6 +10,9 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
     const CURRENT_DIR = ref('~');
     const TERMINAL_MODE = ref('client');
     const COMMAND_HISTORY = ref<String[]>([]);
+    const VIM_EDITOR_VISIBLE = ref(false);
+    const VIM_EDITOR_FILENAME = ref('');
+    const VIM_EDITOR_CONTENT = ref('');
     const emptyPromptInstance = (): PromptInstance => {
         return {
             id: uuidv4(),
@@ -72,5 +75,5 @@ export const useCommandPromptStore = defineStore('commandPrompt', () => {
     // Initialize the first prompt instance
     reset();
 
-    return { PROMPT_INSTANCES, CURRENT_DIR, TERMINAL_MODE, COMMAND_HISTORY, handleCommandInputEnter, handleCommandInputEnterServer, createNewPromptInstanceAndDisablePreviousInstance, createMessagePrompt, reset };
+    return { PROMPT_INSTANCES, CURRENT_DIR, TERMINAL_MODE, COMMAND_HISTORY, VIM_EDITOR_VISIBLE, VIM_EDITOR_FILENAME, VIM_EDITOR_CONTENT, handleCommandInputEnter, handleCommandInputEnterServer, createNewPromptInstanceAndDisablePreviousInstance, createMessagePrompt, reset };
 });

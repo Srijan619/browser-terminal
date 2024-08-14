@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import CommandPromptInputInstance from './CommandPromptInstance.vue';
 import { useCustomizationStore } from '../stores/customizationStore';
-import { storeToRefs } from 'pinia'
+import { useCommandPromptStore } from '../stores/globalStore';
+import { storeToRefs } from 'pinia';
+import VimEditor from './VimEditor.vue';
 
-const store = useCustomizationStore();
-const { TERMINAL_BACKGROUND_COLOR, TERMINAL_REPLY_COLOR, TERMINAL_DIRECTORY_PROMPT_COLOR, TERMINAL_COMMAND_PROMPT_COLOR } = storeToRefs(store);
+const customizationStore = useCustomizationStore();
+const globalStore = useCommandPromptStore();
+
+const { VIM_EDITOR_VISIBLE } = storeToRefs(globalStore);
+const { TERMINAL_BACKGROUND_COLOR, TERMINAL_REPLY_COLOR, TERMINAL_DIRECTORY_PROMPT_COLOR, TERMINAL_COMMAND_PROMPT_COLOR } = storeToRefs(customizationStore);
 </script>
 
 <template>
   <div class="container">
-    <CommandPromptInputInstance />
+    <CommandPromptInputInstance v-if="!VIM_EDITOR_VISIBLE" />
+    <VimEditor v-if="VIM_EDITOR_VISIBLE" />
+    <!-- <VimEditor /> -->
   </div>
 </template>
 

@@ -77,6 +77,21 @@ export const useFilesStore = defineStore('filesStore', () => {
         return currentMap;
     };
 
+    const getFile = (fileName: string, path?: string[]): string => {
+        const map = findMapAtPath(path);
+
+        if (map && map.has(fileName)) {
+            const file = map.get(fileName);
+            // Check if the file is indeed a string or any expected content type
+            return typeof file === 'string' ? file : '';
+        }
+        return ''; // Return an empty string if the file is not found or the map is empty
+    };
+
+    const saveFile = (fileName: string, content: string, path?: string[]): void => {
+        findMapAtPath(path)?.set(fileName, content);
+    }
+
     const addFile = (fileName: string, content: any = "", path?: string[]) => {
         const parentMap = findMapAtPath(path);
         if (parentMap) {
@@ -107,5 +122,7 @@ export const useFilesStore = defineStore('filesStore', () => {
         AVAILABLE_DIRS,
         addFile,
         addFolder,
+        getFile,
+        saveFile
     };
 });

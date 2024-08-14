@@ -39,9 +39,6 @@ onUnmounted(() => {
     document.removeEventListener('selectionchange', handleSelectionChange);
 });
 
-// onUpdated(() => {
-//     focusInput();
-// })
 
 // Function to focus the input
 const focusInput = () => {

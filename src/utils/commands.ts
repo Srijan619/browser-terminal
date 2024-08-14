@@ -13,9 +13,10 @@ const COMMAND_CAT = 'cat';
 const COMMAND_TOP = 'top';
 const COMMAND_HISTORY = 'history';
 const COMMAND_TOUCH = 'touch';
+const COMMAND_VIM = 'vim';
 const COMMAND_HELP = 'help';
 
-const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HISTORY, COMMAND_TOUCH, COMMAND_HELP];
+const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HISTORY, COMMAND_TOUCH, COMMAND_VIM, COMMAND_HELP];
 const BAD_COMMAND_ERROR_MESSAGE = '&nbsp;Command not found! Type <code>help</code> to know all options.';
 let PROMPT_INSTANCE: PromptInstance;
 
@@ -57,7 +58,7 @@ const getCurrentDirName = (currentDir?: string): string => {
 
 const isFile = (fileName: string): boolean => {
     // Check if the filename contains a dot, is not just a dot, and has a valid extension
-    const validExtensions = ['txt', 'md', 'pem'];
+    const validExtensions = ['txt', 'md', 'pem', 'js'];
     const parts = fileName.split('.');
 
     // If there's no dot or only one part, it cannot be a file
@@ -218,6 +219,17 @@ const handleTouchCommand = () => {
     }
 }
 
+const handleVimCommand = () => {
+    const fileName = commandSuffix(PROMPT_INSTANCE.command);
+    if (!fileName) {
+        PROMPT_INSTANCE.reply = "Please provide a filename to start editing."
+        return;
+    }
+    getCommandPromptStore().VIM_EDITOR_VISIBLE = true;
+    getCommandPromptStore().VIM_EDITOR_FILENAME = fileName;
+    getCommandPromptStore().VIM_EDITOR_CONTENT = useFilesStore().getFile(fileName, [getCurrentDirName()]);
+}
+
 const handleDefaultCheck = () => {
     if (!PROMPT_INSTANCE.command) {
         return; //
@@ -263,6 +275,9 @@ const handleCommand = (promptInstance: PromptInstance): void => {
             break;
         case COMMAND_TOUCH:
             handleTouchCommand();
+            break;
+        case COMMAND_VIM:
+            handleVimCommand();
             break;
         default:
             handleDefaultCheck();

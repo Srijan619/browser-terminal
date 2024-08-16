@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import DirectoryPrompt from './DirectoryPrompt.vue';
 import CommandPromptInput from './CommandPromptInput.vue';
-import { defineProps } from 'vue';
 
 defineProps<{
     id: string;

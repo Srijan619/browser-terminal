@@ -14,9 +14,10 @@ const COMMAND_TOP = 'top';
 const COMMAND_HISTORY = 'history';
 const COMMAND_TOUCH = 'touch';
 const COMMAND_VIM = 'vim';
+const COMMAND_CLEAR_LOCALSTORAGE = 'clearLocalStorage';
 const COMMAND_HELP = 'help';
 
-const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HISTORY, COMMAND_TOUCH, COMMAND_VIM, COMMAND_HELP];
+const VALID_COMMANDS = [COMMAND_LS, COMMAND_CD, COMMAND_PWD, COMMAND_CLEAR, COMMAND_CAT, COMMAND_TOP, COMMAND_HISTORY, COMMAND_TOUCH, COMMAND_VIM,COMMAND_CLEAR_LOCALSTORAGE, COMMAND_HELP];
 const BAD_COMMAND_ERROR_MESSAGE = '&nbsp;Command not found! Type <code>help</code> to know all options.';
 let PROMPT_INSTANCE: PromptInstance;
 
@@ -230,6 +231,10 @@ const handleVimCommand = () => {
     getCommandPromptStore().VIM_EDITOR_CONTENT = useFilesStore().getFile(fileName, [getCurrentDirName()]);
 }
 
+const handleClearLocalStorageCommand = () => {
+   localStorage.clear();  
+}
+
 const handleDefaultCheck = () => {
     if (!PROMPT_INSTANCE.command) {
         return; //
@@ -279,6 +284,10 @@ const handleCommand = (promptInstance: PromptInstance): void => {
         case COMMAND_VIM:
             handleVimCommand();
             break;
+    case COMMAND_CLEAR_LOCALSTORAGE:
+            handleClearLocalStorageCommand();
+            break;
+
         default:
             handleDefaultCheck();
             break;

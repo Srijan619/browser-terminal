@@ -19,6 +19,7 @@ What does this terminal support?
 2. Navigate through <code>history</code> of commands used using up and down arrow.
 3. Still using <code>cat</code> is not too outdated, right?
 4. Customize your terminal with top right setting icon, mine favourite is <code>solarized</code>.
+5. Configurations, files, folders created are stored in local storage. Hence, they are persistent and to clear them either clear through devtools or use command <code>clearLocalStorage</code>
 
 And many more to follow in the near future :) Feel free to explore the project and reach out if you have any questions! Start with \`help\` command?
 `);

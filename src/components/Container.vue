@@ -22,7 +22,6 @@ const { TERMINAL_BACKGROUND_COLOR, TERMINAL_REPLY_COLOR, TERMINAL_DIRECTORY_PROM
 
 <style>
 .container {
-  width: min-content;
   height: 100vh;
   background-color: v-bind(TERMINAL_BACKGROUND_COLOR);
   color: v-bind(TERMINAL_REPLY_COLOR);

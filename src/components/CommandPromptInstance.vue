@@ -19,6 +19,6 @@ const { PROMPT_INSTANCES } = storeToRefs(store)
 
 <style scoped>
 .single-instance {
-    margin-left: 5rem;
+    margin-left: 1rem;
 }
 </style>

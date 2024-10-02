@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, defineProps, onMounted, onUnmounted } from 'vue'
+import { ref, defineProps, onMounted, onUnmounted, computed } from 'vue'
 import { useCommandPromptStore } from '../stores/globalStore'
 import { sendInputToServer } from '../utils/commandsToServer'
+import { Commands } from '../utils/commands.ts'
+import SuggestionPrompt from './SuggestionPrompt.vue'
 
 const props = defineProps<{
     id: string
@@ -16,6 +18,8 @@ const currentCommand = ref(PROMPT_INSTANCE?.command || '')
 
 // Create a reference for the input
 const commandInput = ref<HTMLInputElement | null>(null)
+
+const showSuggestion = ref(false)
 
 let debounceTimeout: number | undefined
 
@@ -42,7 +46,6 @@ onUnmounted(() => {
 
 // Function to focus the input
 const focusInput = () => {
-    console.log('focuse input...')
     commandInput.value?.focus()
 }
 
@@ -102,21 +105,57 @@ const handleShowHistoryDown = () => {
         ].toString()
     HISTORY_COUNTER.value--
 }
+
+const handleSuggestion = () => {
+    console.log(
+        'Showing suggestion',
+        filterCommandsThatStartWithCurrentCommand.value
+    )
+    showSuggestion.value =
+        filterCommandsThatStartWithCurrentCommand.value.length > 0
+}
+
+const filterCommandsThatStartWithCurrentCommand = computed(() => {
+    return Commands.filter((command) => {
+        return command.startsWith(currentCommand.value)
+    })
+})
+
+const handleSelectedSuggestion = (suggestion: string) => {
+    console.log('Selected suggestion:', suggestion)
+    currentCommand.value = suggestion
+    handleHideSuggestion()
+}
+
+const handleHideSuggestion = () => {
+    console.log('Hide suggestion')
+    showSuggestion.value = false
+}
 </script>
 
 <template>
-    <input
-        ref="commandInput"
-        class="command-prompt"
-        v-model="currentCommand"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-        @keyup.enter="handleEnter"
-        @keyup.up.prevent="handleShowHistoryUp"
-        @keyup.down.prevent="handleShowHistoryDown"
-        :disabled="!props.enabled"
-    />
+    <div>
+        <input
+            ref="commandInput"
+            class="command-prompt"
+            v-model="currentCommand"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            @keyup.enter="handleEnter"
+            @keyup.up.prevent="handleShowHistoryUp"
+            @keyup.down.prevent="handleShowHistoryDown"
+            @keydown.tab.prevent="handleSuggestion"
+            @keydown.esc="handleHideSuggestion"
+            :disabled="!props.enabled"
+        />
+        <SuggestionPrompt
+            v-if="showSuggestion"
+            :suggestions="filterCommandsThatStartWithCurrentCommand"
+            @select="handleSelectedSuggestion"
+            @hide-suggestion="handleHideSuggestion"
+        />
+    </div>
 </template>
 
 <style scoped>

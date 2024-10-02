@@ -130,6 +130,7 @@ const handleSelectedSuggestion = (suggestion: string) => {
 const handleHideSuggestion = () => {
     console.log('Hide suggestion')
     showSuggestion.value = false
+    focusInput()
 }
 </script>
 

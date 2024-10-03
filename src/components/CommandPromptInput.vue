@@ -34,17 +34,9 @@ const debounce = (func: () => void, delay: number) => {
 }
 // Focus the input on component mount
 onMounted(() => {
-    // As we constantly put focus to input, add selection change to allow user to select text if it is needed
-    document.addEventListener('selectionchange', handleSelectionChange)
     focusInput()
 })
 
-// Cleanup event listeners
-onUnmounted(() => {
-    document.removeEventListener('selectionchange', handleSelectionChange)
-})
-
-// Function to focus the input
 const focusInput = () => {
     commandInput.value?.focus()
 }
@@ -66,22 +58,12 @@ const handleEnter = () => {
     }
 }
 
-// Handle selection change
-const handleSelectionChange = debounce(() => {
-    const selection = window.getSelection()
-    if (selection && selection.toString().length > 0) {
-        blurInput()
-    } else {
-        focusInput()
-    }
-}, 300) // Adjust the delay as needed
-
 const HISTORY_COUNTER = ref(-1)
 
 const handleShowHistoryUp = () => {
+    console.log('Up pressed', store.COMMAND_HISTORY)
     if (store.COMMAND_HISTORY.length === 0) return // No history available
 
-    blurInput()
     // Move up in history
     if (HISTORY_COUNTER.value < store.COMMAND_HISTORY.length - 1) {
         HISTORY_COUNTER.value++
@@ -90,6 +72,7 @@ const handleShowHistoryUp = () => {
                 store.COMMAND_HISTORY.length - 1 - HISTORY_COUNTER.value
             ].toString()
     }
+    focusInput()
 }
 
 const handleShowHistoryDown = () => {
@@ -97,13 +80,13 @@ const handleShowHistoryDown = () => {
         return // Do nothing if no history has been traversed or reached the end
     }
 
-    blurInput()
     // Move down in history
     currentCommand.value =
         store.COMMAND_HISTORY[
             store.COMMAND_HISTORY.length - HISTORY_COUNTER.value
         ].toString()
     HISTORY_COUNTER.value--
+    focusInput()
 }
 
 const handleSuggestion = () => {
@@ -143,9 +126,9 @@ const handleHideSuggestion = () => {
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
-            @keyup.enter="handleEnter"
-            @keyup.up.prevent="handleShowHistoryUp"
-            @keyup.down.prevent="handleShowHistoryDown"
+            @keydown.enter="handleEnter"
+            @keydown.up.prevent="handleShowHistoryUp"
+            @keydown.down.prevent="handleShowHistoryDown"
             @keydown.tab.prevent="handleSuggestion"
             @keydown.esc="handleHideSuggestion"
             :disabled="!props.enabled"

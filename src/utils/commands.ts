@@ -298,14 +298,14 @@ const handleDefaultCheck = () => {
 
 const setAndSanitizePromptInstance = (promptInstance: PromptInstance) => {
   PROMPT_INSTANCE = promptInstance
-  PROMPT_INSTANCE.command = PROMPT_INSTANCE.command.trim()
+  PROMPT_INSTANCE.command = promptInstance.command.trim()
 }
 
 const handleCommand = (promptInstance: PromptInstance): void => {
   setAndSanitizePromptInstance(promptInstance)
-  getCommandPromptStore().COMMAND_HISTORY.push(promptInstance.command)
 
-  const command = commandPrefix(promptInstance.command) as Command // Cast to Command enum
+  const command: Command | null = commandPrefix(PROMPT_INSTANCE.command)
+  if (command) getCommandPromptStore().COMMAND_HISTORY.push(command)
 
   switch (command) {
     case Command.CLEAR:

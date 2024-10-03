@@ -116,7 +116,7 @@ const handleHideSuggestion = () => {
 </script>
 
 <template>
-    <div>
+    <div class="command-prompt-container">
         <input
             ref="commandInput"
             class="command-prompt"
@@ -145,6 +145,11 @@ const handleHideSuggestion = () => {
     all: unset;
     flex: 2;
     white-space: nowrap;
-    /* Prevent line wrapping */
+}
+
+.command-prompt-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 </style>

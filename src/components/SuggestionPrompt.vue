@@ -86,7 +86,9 @@ const selectSuggestion = (suggestion: string) => {
 <style>
 .suggestion-prompt {
     color: inherit;
-    margin-right: 0.1rem;
+    margin: 0.1rem;
+    padding: 0.2rem;
+    width: fit-content;
 }
 
 .suggestion-list {
@@ -102,5 +104,10 @@ span.focused {
     color: black;
     background-color: #e0e0e0;
     border-color: #007bff;
+    padding: 0.3rem;
+    border-radius: 0.3rem;
+    box-shadow:
+        rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+        rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 }
 </style>

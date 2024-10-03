@@ -105,13 +105,11 @@ const filterCommandsThatStartWithCurrentCommand = computed(() => {
 })
 
 const handleSelectedSuggestion = (suggestion: string) => {
-    console.log('Selected suggestion:', suggestion)
     currentCommand.value = suggestion
     handleHideSuggestion()
 }
 
 const handleHideSuggestion = () => {
-    console.log('Hide suggestion')
     showSuggestion.value = false
     focusInput()
 }

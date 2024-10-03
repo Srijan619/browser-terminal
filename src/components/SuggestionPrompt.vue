@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref, onMounted, defineEmits } from 'vue'
+import { defineProps, ref, onMounted, onBeforeUnmount, defineEmits } from 'vue'
 
 const props = defineProps<{
     suggestions?: string[] | null
@@ -13,13 +13,12 @@ const emit = defineEmits<{
 const focusedIndex = ref(0)
 const suggestionRef = ref<HTMLElement | null>(null)
 
-// Focus the suggestion component on Tab key press
+// Function to handle key events
 const handleKeyDown = (event: KeyboardEvent) => {
     if (props.suggestions) {
         if (event.key === 'Tab') {
-            event.preventDefault() // Prevent the default tabbing behavior
+            event.preventDefault()
 
-            // Focus the suggestion component if it's not already focused
             if (suggestionRef.value) {
                 suggestionRef.value.focus()
             }
@@ -33,15 +32,32 @@ const handleKeyDown = (event: KeyboardEvent) => {
         }
     }
 }
+
+// Function to detect clicks outside the component
+const handleClickOutside = (event: MouseEvent) => {
+    if (
+        suggestionRef.value &&
+        !suggestionRef.value.contains(event.target as Node)
+    ) {
+        emit('hide-suggestion')
+    }
+}
+
+// Set up the event listener when the component is mounted
 onMounted(() => {
-    console.log('I am mounting...', suggestionRef.value)
     if (suggestionRef.value) {
         suggestionRef.value.focus()
     }
+    document.addEventListener('click', handleClickOutside)
+})
+
+// Clean up the event listener when the component is unmounted
+onBeforeUnmount(() => {
+    document.removeEventListener('click', handleClickOutside)
 })
 
 const selectSuggestion = (suggestion: string) => {
-    emit('select', suggestion) // Emit the selected suggestion
+    emit('select', suggestion)
 }
 </script>
 
@@ -84,7 +100,7 @@ const selectSuggestion = (suggestion: string) => {
 
 span.focused {
     color: black;
-    background-color: #e0e0e0; /* Highlight the focused suggestion */
-    border-color: #007bff; /* Change border color when focused */
+    background-color: #e0e0e0;
+    border-color: #007bff;
 }
 </style>

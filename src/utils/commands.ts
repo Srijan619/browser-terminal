@@ -17,6 +17,7 @@ export enum Command {
   TOUCH = 'touch',
   VIM = 'vim',
   CLEAR_LOCALSTORAGE = 'clearLocalStorage',
+  REMOVE = 'rm',
   HELP = 'help',
 }
 
@@ -31,6 +32,7 @@ export const Commands: Command[] = [
   Command.TOUCH,
   Command.VIM,
   Command.CLEAR_LOCALSTORAGE,
+  Command.REMOVE,
   Command.HELP,
 ]
 const BAD_COMMAND_ERROR_MESSAGE =
@@ -73,6 +75,10 @@ const commandPrefix = (command: string): Command | null => {
 
 const commandSuffix = (command: string): string => {
   return command?.split(' ')[1]?.trim()
+}
+
+const commandSuffixAll = (command: string): string => {
+  return command.split(' ').slice(1).join(' ').trim()
 }
 
 const getCurrentDirName = (currentDir?: string): string => {
@@ -262,7 +268,7 @@ const handleTouchCommand = () => {
     return
   }
   if (isFile(fileName)) {
-    useFilesStore().addFile(fileName, 'Something', [getCurrentDirName()])
+    useFilesStore().addFile(fileName, '', [getCurrentDirName()])
   } else {
     useFilesStore().addFolder(fileName, [getCurrentDirName()])
   }
@@ -286,6 +292,40 @@ const handleClearLocalStorageCommand = () => {
   localStorage.clear()
 }
 
+const handleRemoveCommand = () => {
+  const removeArgument = commandSuffixAll(PROMPT_INSTANCE.command)
+
+  if (!removeArgument) {
+    PROMPT_INSTANCE.reply =
+      'Proper usage of rm command is with rm filename | rm -r folder_name'
+  } else if (removeArgument.includes('-r')) {
+    // If argument has -r means folder, delete everything recursively
+    const folderName = removeArgument.split('-r')[1].trim()
+    if (isFile(folderName)) {
+      PROMPT_INSTANCE.reply = `File detected in command ${PROMPT_INSTANCE.command} while using -r option, please remove option -r to delete a file`
+    } else {
+      if (useFilesStore().deleteFolder(folderName)) {
+        PROMPT_INSTANCE.reply = `Folder ${folderName} deleted successfully!`
+      } else {
+        PROMPT_INSTANCE.reply = `No such folder ${folderName} found!`
+      }
+    }
+  } else {
+    // remove file if no option provided
+    const fileName = removeArgument
+    if (isFile(fileName)) {
+      if (useFilesStore().deleteFile(fileName)) {
+        PROMPT_INSTANCE.reply = `File ${fileName} successfully deleted!`
+      } else {
+        PROMPT_INSTANCE.reply = `No such file ${fileName} found!`
+      }
+    } else {
+      PROMPT_INSTANCE.reply = `Folder detected in command ${PROMPT_INSTANCE.command}, please use option -r to delete a folder`
+    }
+  }
+  console.log('Handling remove command,...', PROMPT_INSTANCE)
+}
+
 const handleDefaultCheck = () => {
   if (!PROMPT_INSTANCE.command) {
     return //
@@ -302,10 +342,12 @@ const setAndSanitizePromptInstance = (promptInstance: PromptInstance) => {
 }
 
 const handleCommand = (promptInstance: PromptInstance): void => {
+  if (!promptInstance.command) return
+
   setAndSanitizePromptInstance(promptInstance)
+  getCommandPromptStore().COMMAND_HISTORY.push(promptInstance.command) // Store command with arguments and everything
 
   const command: Command | null = commandPrefix(PROMPT_INSTANCE.command)
-  if (command) getCommandPromptStore().COMMAND_HISTORY.push(command)
 
   switch (command) {
     case Command.CLEAR:
@@ -337,6 +379,9 @@ const handleCommand = (promptInstance: PromptInstance): void => {
       break
     case Command.VIM:
       handleVimCommand()
+      break
+    case Command.REMOVE:
+      handleRemoveCommand()
       break
     case Command.CLEAR_LOCALSTORAGE:
       handleClearLocalStorageCommand()

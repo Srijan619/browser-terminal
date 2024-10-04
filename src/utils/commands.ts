@@ -35,6 +35,8 @@ export const Commands: Command[] = [
   Command.REMOVE,
   Command.HELP,
 ]
+const RM_COMMAND_USAGE_MESSAGE =
+  'Proper usage of rm command is with rm filename | rm -r folder_name'
 const BAD_COMMAND_ERROR_MESSAGE =
   '&nbsp;Command not found! Type <code>help</code> to know all options.'
 let PROMPT_INSTANCE: PromptInstance
@@ -296,34 +298,42 @@ const handleRemoveCommand = () => {
   const removeArgument = commandSuffixAll(PROMPT_INSTANCE.command)
 
   if (!removeArgument) {
-    PROMPT_INSTANCE.reply =
-      'Proper usage of rm command is with rm filename | rm -r folder_name'
-  } else if (removeArgument.includes('-r')) {
-    // If argument has -r means folder, delete everything recursively
-    const folderName = removeArgument.split('-r')[1].trim()
-    if (isFile(folderName)) {
-      PROMPT_INSTANCE.reply = `File detected in command ${PROMPT_INSTANCE.command} while using -r option, please remove option -r to delete a file`
+    PROMPT_INSTANCE.reply = RM_COMMAND_USAGE_MESSAGE
+    return
+  }
+
+  if (removeArgument.includes('-r')) {
+    handleFolderDeletion(removeArgument)
+  } else {
+    handleFileDeletion(removeArgument)
+  }
+}
+
+const handleFolderDeletion = (argument: string) => {
+  const folderName = argument.split('-r')[1].trim()
+
+  if (isFile(folderName)) {
+    PROMPT_INSTANCE.reply = `File detected in command ${PROMPT_INSTANCE.command} while using -r option, please remove option -r to delete a file`
+    return
+  }
+
+  if (useFilesStore().deleteFolder(folderName)) {
+    PROMPT_INSTANCE.reply = `Folder ${folderName} deleted successfully!`
+  } else {
+    PROMPT_INSTANCE.reply = `No such folder ${folderName} found!`
+  }
+}
+
+const handleFileDeletion = (fileName: string) => {
+  if (isFile(fileName)) {
+    if (useFilesStore().deleteFile(fileName)) {
+      PROMPT_INSTANCE.reply = `File ${fileName} successfully deleted!`
     } else {
-      if (useFilesStore().deleteFolder(folderName)) {
-        PROMPT_INSTANCE.reply = `Folder ${folderName} deleted successfully!`
-      } else {
-        PROMPT_INSTANCE.reply = `No such folder ${folderName} found!`
-      }
+      PROMPT_INSTANCE.reply = `No such file ${fileName} found!`
     }
   } else {
-    // remove file if no option provided
-    const fileName = removeArgument
-    if (isFile(fileName)) {
-      if (useFilesStore().deleteFile(fileName)) {
-        PROMPT_INSTANCE.reply = `File ${fileName} successfully deleted!`
-      } else {
-        PROMPT_INSTANCE.reply = `No such file ${fileName} found!`
-      }
-    } else {
-      PROMPT_INSTANCE.reply = `Folder detected in command ${PROMPT_INSTANCE.command}, please use option -r to delete a folder`
-    }
+    PROMPT_INSTANCE.reply = `Folder detected in command ${PROMPT_INSTANCE.command}, please use option -r to delete a folder`
   }
-  console.log('Handling remove command,...', PROMPT_INSTANCE)
 }
 
 const handleDefaultCheck = () => {

@@ -1,4 +1,4 @@
-import { marked } from "marked";
+import { marked } from 'marked'
 
 export const WELCOME_MESSAGE = marked.parse(`
 # Welcome to My Project!
@@ -22,4 +22,4 @@ What does this terminal support?
 5. Configurations, files, folders created are stored in local storage. Hence, they are persistent and to clear them either clear through devtools or use command <code>clearLocalStorage</code>
 
 And many more to follow in the near future :) Feel free to explore the project and reach out if you have any questions! Start with \`help\` command?
-`);
+`)

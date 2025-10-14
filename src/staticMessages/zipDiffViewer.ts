@@ -1,4 +1,4 @@
-import { marked } from "marked";
+import { marked } from 'marked'
 
 export const zipDiffViewerProject = marked.parse(`
 # Hello Project Zip Diff Viewer
@@ -14,4 +14,4 @@ Welcome to the **zip-diff-viewer** project! This application provides a user-fri
 
 ### Getting Started
 To get started with the **zip-diff-viewer**, visit the [GitHub repository](https://github.com/Srijan619/zip-diff-viewer) for installation instructions, usage details, and contribution guidelines.
-`);
+`)

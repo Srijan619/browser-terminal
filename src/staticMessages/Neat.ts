@@ -1,4 +1,4 @@
-import { marked } from "marked";
+import { marked } from 'marked'
 
 export const NEATJS_PROJECT_DESCRIPTION = marked.parse(`
 # Welcome to NEATjs!
@@ -50,4 +50,4 @@ Contributions are welcome! If you have suggestions or improvements, feel free to
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
 Feel free to explore the project, experiment with the code, and reach out if you have any questions!
-`);
+`)

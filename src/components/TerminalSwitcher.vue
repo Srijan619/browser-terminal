@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { useCommandPromptStore } from '../stores/globalStore';
+import { ref, watch } from 'vue'
+import { useCommandPromptStore } from '../stores/globalStore'
 
 // Get the store
-const store = useCommandPromptStore();
+const store = useCommandPromptStore()
 
 // Create a ref for the selected terminal mode
-const selectedMode = ref(store.TERMINAL_MODE);
+const selectedMode = ref(store.TERMINAL_MODE)
 
 // Watch for changes in selectedMode and update the store accordingly
 watch(selectedMode, (newMode) => {
-    store.TERMINAL_MODE = newMode;
-    store.reset();
-    store.createMessagePrompt("Welcome to terminal: " + newMode)
-    store.createNewPromptInstanceAndDisablePreviousInstance();
-});
+    store.TERMINAL_MODE = newMode
+    store.reset()
+    store.createMessagePrompt('Welcome to terminal: ' + newMode)
+    store.createNewPromptInstanceAndDisablePreviousInstance()
+})
 </script>
 
 <template>

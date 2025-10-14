@@ -1,4 +1,4 @@
-import { marked } from "marked";
+import { marked } from 'marked'
 
 export const SAMPLE_PEM_KEY = marked.parse(`
 <pre>
@@ -31,7 +31,3 @@ DtkpjGHQzPF6vOe907y5NQLvVFGXUq/FIJZxB8k..fJdHEm2M4=
 -----END RSA PRIVATE KEY----
 </pre>
 `)
-
-
-
-

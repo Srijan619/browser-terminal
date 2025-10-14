@@ -7,99 +7,137 @@
                 <div class="form-group">
                     <label for="background-color">Default Theme</label>
                     <select @change="applyTheme" v-model="selectedTheme">
-                        <option v-for="theme in availableThemes" :key="theme">{{ theme }}
+                        <option v-for="theme in availableThemes" :key="theme">
+                            {{ theme }}
                         </option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="background-color">Terminal Background Color</label>
-                    <input id="background-color" type="color" v-model="TERMINAL_BACKGROUND_COLOR" />
+                    <label for="background-color"
+                        >Terminal Background Color</label
+                    >
+                    <input
+                        id="background-color"
+                        type="color"
+                        v-model="TERMINAL_BACKGROUND_COLOR"
+                    />
                 </div>
 
                 <div class="form-group">
                     <label for="reply-color">Terminal Reply Color</label>
-                    <input id="reply-color" type="color" v-model="TERMINAL_REPLY_COLOR" />
+                    <input
+                        id="reply-color"
+                        type="color"
+                        v-model="TERMINAL_REPLY_COLOR"
+                    />
                 </div>
 
                 <div class="form-group">
-                    <label for="directory-prompt-color">Directory Prompt Color</label>
-                    <input id="directory-prompt-color" type="color" v-model="TERMINAL_DIRECTORY_PROMPT_COLOR" />
+                    <label for="directory-prompt-color"
+                        >Directory Prompt Color</label
+                    >
+                    <input
+                        id="directory-prompt-color"
+                        type="color"
+                        v-model="TERMINAL_DIRECTORY_PROMPT_COLOR"
+                    />
                 </div>
 
                 <div class="form-group">
-                    <label for="command-prompt-color">Command Prompt Color</label>
-                    <input id="command-prompt-color" type="color" v-model="TERMINAL_COMMAND_PROMPT_COLOR" />
+                    <label for="command-prompt-color"
+                        >Command Prompt Color</label
+                    >
+                    <input
+                        id="command-prompt-color"
+                        type="color"
+                        v-model="TERMINAL_COMMAND_PROMPT_COLOR"
+                    />
                 </div>
 
                 <div class="form-group">
                     <label for="ls-file-color">LS File Color</label>
-                    <input id="ls-file-color" type="color" v-model="TERMINAL_LS_FILE_COLOR" />
+                    <input
+                        id="ls-file-color"
+                        type="color"
+                        v-model="TERMINAL_LS_FILE_COLOR"
+                    />
                 </div>
 
                 <div class="form-group">
                     <label for="ls-folder-color">LS Folder Color</label>
-                    <input id="ls-folder-color" type="color" v-model="TERMINAL_LS_FOLDER_COLOR" />
+                    <input
+                        id="ls-folder-color"
+                        type="color"
+                        v-model="TERMINAL_LS_FOLDER_COLOR"
+                    />
                 </div>
             </form>
         </div>
     </div>
 </template>
-  
+
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, computed } from 'vue';
-import { useCustomizationStore } from '../stores/customizationStore';
-import { themes } from '../assets/themes';
+import { onBeforeUnmount, onMounted, ref, computed } from 'vue'
+import { useCustomizationStore } from '../stores/customizationStore'
+import { themes } from '../assets/themes'
 import { storeToRefs } from 'pinia'
 
-const store = useCustomizationStore();
-const { TERMINAL_BACKGROUND_COLOR,
+const store = useCustomizationStore()
+const {
+    TERMINAL_BACKGROUND_COLOR,
     TERMINAL_REPLY_COLOR,
     TERMINAL_DIRECTORY_PROMPT_COLOR,
     TERMINAL_COMMAND_PROMPT_COLOR,
     TERMINAL_LS_FILE_COLOR,
-    TERMINAL_LS_FOLDER_COLOR } = storeToRefs(store);
+    TERMINAL_LS_FOLDER_COLOR,
+} = storeToRefs(store)
 
-const showPanel = ref(false);
-const panel = ref<HTMLDivElement | null>(null);
-const button = ref<HTMLButtonElement | null>(null);
-const selectedTheme = ref(store.TERMINAL_DEFAULT_THEME);
+const showPanel = ref(false)
+const panel = ref<HTMLDivElement | null>(null)
+const button = ref<HTMLButtonElement | null>(null)
+const selectedTheme = ref(store.TERMINAL_DEFAULT_THEME)
 
 const togglePanel = () => {
     if (button.value?.classList.contains('circle-animation')) {
-        button.value.classList.remove('circle-animation');
+        button.value.classList.remove('circle-animation')
     } else {
-        button.value?.classList.add('circle-animation');
+        button.value?.classList.add('circle-animation')
     }
-    showPanel.value = !showPanel.value;
-};
+    showPanel.value = !showPanel.value
+}
 
 // Click outside handler
 const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target as Node;
-    if (panel.value && button.value && !panel.value.contains(target) && !button.value.contains(target)) {
+    const target = event.target as Node
+    if (
+        panel.value &&
+        button.value &&
+        !panel.value.contains(target) &&
+        !button.value.contains(target)
+    ) {
         togglePanel()
     }
-};
+}
 
 const availableThemes = computed(() => {
-    return Object.keys(themes);
+    return Object.keys(themes)
 })
 
 const applyTheme = (event: Event) => {
-    const target = event.target as HTMLSelectElement; // Type assertion here
-    const themeName = target.value as keyof typeof themes;
-    store.applyTheme(themeName);
-};
+    const target = event.target as HTMLSelectElement // Type assertion here
+    const themeName = target.value as keyof typeof themes
+    store.applyTheme(themeName)
+}
 
 onMounted(() => {
-    document.addEventListener('click', handleClickOutside);
-});
+    document.addEventListener('click', handleClickOutside)
+})
 
 onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside);
-});
+    document.removeEventListener('click', handleClickOutside)
+})
 </script>
-  
+
 <style scoped>
 .main-container {
     position: absolute;
@@ -150,14 +188,13 @@ onBeforeUnmount(() => {
     border: transparent;
     cursor: pointer;
     position: relative;
-    margin: 1rem .5rem 0 0;
+    margin: 1rem 0.5rem 0 0;
     transform: scale(1.5);
     background-color: transparent;
 }
 
 .setting.circle-animation {
-    animation: mymove 5s .5;
-
+    animation: mymove 5s 0.5;
 }
 
 @keyframes mymove {
@@ -184,7 +221,7 @@ label {
     flex: 2;
 }
 
-input[type="color"] {
+input[type='color'] {
     width: 100%;
     padding: 5px;
     border: 1px solid #ccc;
@@ -216,4 +253,3 @@ select {
     background-color: #0056b3;
 }
 </style>
-  

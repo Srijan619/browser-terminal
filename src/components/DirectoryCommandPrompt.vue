@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import DirectoryPrompt from './DirectoryPrompt.vue';
-import CommandPromptInput from './CommandPromptInput.vue';
+import DirectoryPrompt from './DirectoryPrompt.vue'
+import CommandPromptInput from './CommandPromptInput.vue'
 
 defineProps<{
-    id: string;
-    command: string;
-    currentDir: string;
-    enabled: boolean;
-}>();
+    id: string
+    command: string
+    currentDir: string
+    enabled: boolean
+}>()
 </script>
 
 <template>

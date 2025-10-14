@@ -1,8 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-    currentDir: string;
-}>();
-
+    currentDir: string
+}>()
 </script>
 
 <template>

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import Container from './components/Container.vue'
+import GuiContainer from './components/GuiContainer.vue'
+//import Container from './components/TerminalContainer.vue'
 // import TerminalSwitcher from './components/TerminalSwitcher.vue';
-import Customizer from './components/Customizer.vue'
+// import Customizer from './components/Customizer.vue'
 </script>
 
 <template>
-    <Container />
+    <GuiContainer />
     <!-- <TerminalSwitcher /> -->
-    <Customizer />
+    <!-- <Customizer /> -->
 </template>
 
 <style scoped></style>

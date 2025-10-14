@@ -34,6 +34,7 @@ export const Commands: Command[] = [
     Command.VIM,
     Command.CLEAR_LOCALSTORAGE,
     Command.REMOVE,
+    Command.GUI,
     Command.HELP,
 ]
 const RM_COMMAND_USAGE_MESSAGE =
@@ -352,6 +353,11 @@ const setAndSanitizePromptInstance = (promptInstance: PromptInstance) => {
     PROMPT_INSTANCE.command = promptInstance.command.trim()
 }
 
+const handleGuiCommand = () => {
+    console.log('In a god mode now')
+    PROMPT_INSTANCE.reply = 'You are about to enter to a different world'
+}
+
 const handleCommand = (promptInstance: PromptInstance): void => {
     if (!promptInstance.command) return
 
@@ -396,6 +402,9 @@ const handleCommand = (promptInstance: PromptInstance): void => {
             break
         case Command.CLEAR_LOCALSTORAGE:
             handleClearLocalStorageCommand()
+            break
+        case Command.GUI:
+            handleGuiCommand()
             break
         default:
             handleDefaultCheck()

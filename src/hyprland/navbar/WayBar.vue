@@ -2,7 +2,9 @@
     <div :class="$style.waybar">
         <div :class="[$style.section, $style.left]">
             <span :class="$style.item"> </span>
-            <span :class="$style.item"> </span>
+            <button :class="$style.item" @click="$emit('openTerminal')">
+                
+            </button>
         </div>
 
         <div :class="[$style.section, $style.center]">

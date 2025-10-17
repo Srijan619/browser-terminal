@@ -39,6 +39,12 @@ body {
     -ms-overflow-style: none;
 }
 
+button {
+    all: unset;
+    font-family: 'JetBrainsMono Nerd Font', monospace;
+    cursor: pointer;
+}
+
 body::-webkit-scrollbar {
     display: none;
 }

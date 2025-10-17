@@ -124,10 +124,6 @@ const handleNext = () => {
     font-size: 14px;
     cursor: pointer;
     transition: color 0.2s ease;
-
-    font-family: 'JetBrainsMono Nerd Font', monospace;
-    line-height: 1;
-    padding: 0;
 }
 
 .controlButton:hover {

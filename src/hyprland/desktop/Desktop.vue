@@ -1,6 +1,6 @@
 <template>
     <div class="desktop-container">
-        <Waybar />
+        <Waybar @openTerminal="handleOpenTerminal" />
         <transition name="slide-up">
             <div v-show="showTerminal" class="terminal-window">
                 <Container />
@@ -10,17 +10,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import Container from '../../components/TerminalContainer.vue'
 import Waybar from '../navbar/WayBar.vue'
 
 const showTerminal = ref(false)
 
-onMounted(() => {
-    setTimeout(() => {
-        showTerminal.value = true
-    }, 1000)
-})
+const handleOpenTerminal = () => {
+    showTerminal.value = !showTerminal.value
+}
 </script>
 
 <style scoped>
@@ -62,6 +60,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     padding: 0;
+    font-size: small;
 }
 
 .slide-up-enter-active {

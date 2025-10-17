@@ -28,7 +28,7 @@ import Waybar from '../navbar/WayBar.vue'
 
 /* Override background on all nested divs */
 .desktop-container div {
-    background-color: transparent !important;
+    /* background-color: transparent !important; */
 }
 
 /* Terminal window styling */

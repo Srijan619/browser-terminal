@@ -7,34 +7,45 @@
 
         <div :class="[$style.section, $style.center]">
             <span :class="[$style.item, $style.time]">{{ time }}</span>
+            <NowPlayingIsland />
         </div>
 
         <div :class="[$style.section, $style.right]">
-            <span :class="$style.icon">&#xf120;</span>
-
-            <span :class="$style.icon">
-                <!-- Bluetooth icon + status -->
-                &#xf293; {{ bluetoothStatus }}
+            <span
+                :class="[
+                    $style.icon,
+                    bluetoothStatus === 'On' ? $style.active : $style.inactive,
+                ]"
+                title="Bluetooth"
+            >
+                &#xf293;
             </span>
 
-            <span :class="$style.icon">
-                <!-- Battery icon + level -->
-                &#xf240; {{ batteryLevel }}%
+            <span :class="[$style.icon, $style.active]" title="Battery">
+                &#xf240;
             </span>
 
-            <span :class="$style.icon">
-                <!-- Wifi icon + status -->
-                &#xf1eb; {{ wifiStatus }}
+            <span
+                :class="[
+                    $style.icon,
+                    wifiStatus === 'Connected'
+                        ? $style.active
+                        : $style.inactive,
+                ]"
+                title="WiFi"
+            >
+                &#xf1eb;
             </span>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted } from 'vue'
+import NowPlayingIsland from './NowPlayingIsland.vue'
 
+// INFO: Do me from rust to here
 const time = ref('')
-const batteryLevel = ref('N/A')
 const bluetoothStatus = ref('Unavailable')
 const wifiStatus = ref('Unavailable')
 
@@ -44,23 +55,6 @@ function updateTime() {
         hour: '2-digit',
         minute: '2-digit',
     })
-}
-
-// Battery API setup
-let battery: any = null
-
-async function setupBattery() {
-    if ('getBattery' in navigator) {
-        battery = await (navigator as any).getBattery()
-        function updateBatteryInfo() {
-            batteryLevel.value = Math.round(battery.level * 100)
-        }
-        updateBatteryInfo()
-
-        battery.addEventListener('levelchange', updateBatteryInfo)
-    } else {
-        batteryLevel.value = 'N/A'
-    }
 }
 
 // Bluetooth placeholder (no direct status available in browser)
@@ -75,19 +69,12 @@ function setupWifi() {
     wifiStatus.value = navigator.onLine ? 'Connected' : 'Offline'
 }
 
-onMounted(() => {
+onMounted(async () => {
     updateTime()
     setInterval(updateTime, 60000) // Update every minute
 
-    setupBattery()
     setupBluetooth()
     setupWifi()
-})
-
-onBeforeUnmount(() => {
-    if (battery) {
-        battery.removeEventListener('levelchange', () => {})
-    }
 })
 </script>
 
@@ -120,6 +107,7 @@ onBeforeUnmount(() => {
     display: flex;
     gap: 15px;
     align-items: center;
+    margin-right: 2rem;
 }
 
 .center {
@@ -133,6 +121,19 @@ onBeforeUnmount(() => {
 }
 
 .icon {
-    white-space: nowrap;
+    transition:
+        color 0.3s ease,
+        opacity 0.3s ease;
+}
+/* Active: bright colored icons */
+.active {
+    color: #61afef; /* bright blue for active */
+    opacity: 1;
+}
+
+/* Inactive: faded */
+.inactive {
+    color: #555; /* greyed out */
+    opacity: 0.4;
 }
 </style>

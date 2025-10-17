@@ -88,6 +88,5 @@ onBeforeUnmount(() => {
     width: 100vw;
     height: 100vh;
     border: 1px solid #ddd;
-    font-family: 'monospace';
 }
 </style>

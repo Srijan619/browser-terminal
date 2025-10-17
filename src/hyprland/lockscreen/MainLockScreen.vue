@@ -103,7 +103,6 @@ function handleMouseLeave() {
     flex-direction: column;
     align-items: center;
     color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: center;
 }
 

@@ -30,7 +30,7 @@
 
 html,
 body {
-    font-family: 'JetBrainsMono Nerd Font', monospace;
+    font-family: 'JetBrainsMono Nerd Font', monospace !important;
 }
 
 body {

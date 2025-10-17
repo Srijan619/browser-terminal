@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import Container from '../../components/TerminalContainer.vue'
+import Waybar from '../navbar/WayBar.vue'
 </script>
 
 <template>
     <div class="desktop-container">
-        <div class="terminal-window">
-            <Container />
-        </div>
+        <Waybar />
+        <!-- <div class="terminal-window"> -->
+        <!--     <Container /> -->
+        <!-- </div> -->
     </div>
 </template>
 
 <style scoped>
 .desktop-container {
     height: 100vh;
-    background-color: red;
     background-image: url('desktop_wallpaper.png');
     background-size: cover;
     background-position: center;

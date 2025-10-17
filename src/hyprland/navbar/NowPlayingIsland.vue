@@ -8,15 +8,15 @@
         @mouseleave="isHovered = false"
     >
         <div v-if="!isHovered" :class="$style.compactNowPlaying">
-            <span class="nerd-font"></span>
+            <span> &nbsp;{{ currentTrack.title }}</span>
         </div>
 
         <div v-if="isHovered" :class="[$style.controls]">
             <button :class="$style.controlButton" @click="handlePrevious">
-                <span class="nerd-font"></span>
+                <span></span>
             </button>
             <button :class="$style.controlButton" @click="handlePlayPause">
-                <span class="nerd-font">
+                <span>
                     <span v-if="isPlaying"></span>
                     <span v-else></span>
                 </span>
@@ -25,7 +25,7 @@
             <span :class="[$style.title]">{{ currentTrack.title }}</span>
 
             <button :class="$style.controlButton" @click="handleNext">
-                <span class="nerd-font"></span>
+                <span></span>
             </button>
         </div>
     </div>
@@ -35,9 +35,9 @@
 import { ref } from 'vue'
 
 const isHovered = ref(false)
-const isPlaying = ref(false)
+const isPlaying = ref(true)
 const currentTrack = ref({
-    title: 'Mock Track - Artist',
+    title: 'Lofi Beats - Dr. Dre',
 })
 
 const handlePlayPause = () => {
@@ -91,7 +91,6 @@ const handleNext = () => {
 }
 
 .compactNowPlaying {
-    font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;

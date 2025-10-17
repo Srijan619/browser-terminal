@@ -60,7 +60,7 @@ const handleNext = () => {
 
     position: fixed;
     top: 5px;
-    left: 55%;
+    left: 50%;
     transform: translateX(-50%);
     background-color: rgba(40, 40, 40, 0.9);
     backdrop-filter: blur(12px);

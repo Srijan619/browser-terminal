@@ -1,16 +1,27 @@
-<script setup lang="ts">
-import Container from '../../components/TerminalContainer.vue'
-import Waybar from '../navbar/WayBar.vue'
-</script>
-
 <template>
     <div class="desktop-container">
         <Waybar />
-        <!-- <div class="terminal-window"> -->
-        <!--     <Container /> -->
-        <!-- </div> -->
+        <transition name="slide-up">
+            <div v-show="showTerminal" class="terminal-window">
+                <Container />
+            </div>
+        </transition>
     </div>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import Container from '../../components/TerminalContainer.vue'
+import Waybar from '../navbar/WayBar.vue'
+
+const showTerminal = ref(false)
+
+onMounted(() => {
+    setTimeout(() => {
+        showTerminal.value = true
+    }, 1000)
+})
+</script>
 
 <style scoped>
 .desktop-container {
@@ -28,14 +39,18 @@ import Waybar from '../navbar/WayBar.vue'
 
 /* Override background on all nested divs */
 .desktop-container div {
-    /* background-color: transparent !important; */
+    background-color: transparent !important;
 }
 
 /* Terminal window styling */
 .terminal-window {
     max-width: 90vw;
-    height: 550px;
-    max-height: 90vh;
+    min-width: 90vw;
+    width: 90vw;
+
+    height: 70vh;
+    min-height: 70vh;
+    max-height: 70vh;
 
     border-radius: 12px;
     border: 2px solid rgba(255, 255, 255, 0.15); /* subtle glassy border */
@@ -47,6 +62,18 @@ import Waybar from '../navbar/WayBar.vue'
     display: flex;
     flex-direction: column;
     padding: 0;
+}
+
+.slide-up-enter-active {
+    transition: transform 0.8s ease;
+}
+.slide-up-enter-from {
+    transform: translateY(100%);
+    opacity: 0;
+}
+.slide-up-enter-to {
+    transform: translateY(0);
+    opacity: 1;
 }
 </style>
 

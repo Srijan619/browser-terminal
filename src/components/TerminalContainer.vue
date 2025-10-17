@@ -33,7 +33,7 @@ const {
     display: flex;
     flex-direction: column;
     padding: 0.1rem;
-    overflow-y: scroll;
+    overflow: hidden;
 }
 
 .directory-prompt {

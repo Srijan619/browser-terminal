@@ -17,7 +17,7 @@ defineProps<{
     </div>
 </template>
 
-<style scoped>
+<style>
 .single-prompt-card {
     width: 100vw;
     display: flex;

@@ -7,14 +7,26 @@
         @mouseenter="isHovered = true"
         @mouseleave="isHovered = false"
     >
+        <audio
+            ref="audioRef"
+            :src="streamUrl"
+            @ended="handleNext"
+            preload="auto"
+        ></audio>
+
         <div v-if="!isHovered" :class="$style.compactNowPlaying">
-            <span> &nbsp;{{ currentTrack.title }}</span>
+            <span> &nbsp;{{ currentTrackDisplay }}</span>
         </div>
 
         <div v-if="isHovered" :class="[$style.controls]">
-            <button :class="$style.controlButton" @click="handlePrevious">
+            <button
+                v-if="!isRadio"
+                :class="$style.controlButton"
+                @click="handlePrevious"
+            >
                 <span></span>
             </button>
+
             <button :class="$style.controlButton" @click="handlePlayPause">
                 <span>
                     <span v-if="isPlaying"></span>
@@ -22,9 +34,15 @@
                 </span>
             </button>
 
-            <span :class="[$style.title]">{{ currentTrack.title }}</span>
+            <span :class="[$style.title]" :title="currentTrackDisplay">{{
+                currentTrackDisplay
+            }}</span>
 
-            <button :class="$style.controlButton" @click="handleNext">
+            <button
+                v-if="!isRadio"
+                :class="$style.controlButton"
+                @click="handleNext"
+            >
                 <span></span>
             </button>
         </div>
@@ -32,26 +50,91 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+
+const streamUrl =
+    'https://knkx-live-a.edge.audiocdn.com/6285_128k?aw_0_1st.playerid=jazz24.org&uuid=vyfp1tf56'
+
+const audioRef = ref<HTMLAudioElement | null>(null)
 
 const isHovered = ref(false)
-const isPlaying = ref(true)
+const isPlaying = ref(false)
+const isRadio = ref(true)
+
 const currentTrack = ref({
-    title: 'Lofi Beats - Dr. Dre',
+    artist: 'Loading...',
+    title: '',
 })
 
+// Compose display string
+const currentTrackDisplay = computed(() => {
+    if (currentTrack.value.artist && currentTrack.value.title) {
+        return `${currentTrack.value.artist} - ${currentTrack.value.title}`
+    }
+    if (currentTrack.value.title) return currentTrack.value.title
+    if (currentTrack.value.artist) return currentTrack.value.artist
+    return 'Loading...'
+})
+
+// Fetch now playing info from NPR stations API
+async function fetchNowPlaying() {
+    try {
+        const res = await fetch(
+            'https://api.composer.nprstations.org/v1/widget/5182a213e1c801ca005dbe32/now?format=json&style=v2&show_song=true'
+        )
+        if (!res.ok) throw new Error('Failed to fetch now playing')
+
+        const data = await res.json()
+        // Extract artist and track name from the response:
+        const song = data.onNow?.song || {}
+
+        currentTrack.value.artist = song.artistName || 'Unknown Artist'
+        currentTrack.value.title = song.trackName || 'Unknown Track'
+    } catch (e) {
+        currentTrack.value.artist = 'Error'
+        currentTrack.value.title = 'Loading track'
+        console.error(e)
+    }
+}
+
 const handlePlayPause = () => {
+    if (!audioRef.value) return
+
+    if (isPlaying.value) {
+        audioRef.value.pause()
+    } else {
+        audioRef.value.play()
+    }
+
     isPlaying.value = !isPlaying.value
-    // Playback logic here
 }
 
 const handlePrevious = () => {
-    // Previous track logic here
+    // Streaming radio no previous, so restart stream
+    if (audioRef.value) {
+        audioRef.value.currentTime = 0
+    }
 }
 
 const handleNext = () => {
-    // Next track logic here
+    // Streaming radio no next, so restart stream
+    if (audioRef.value) {
+        audioRef.value.currentTime = 0
+        audioRef.value.play()
+        isPlaying.value = true
+    }
 }
+
+let intervalId: number | undefined
+
+onMounted(() => {
+    fetchNowPlaying()
+    intervalId = setInterval(fetchNowPlaying, 30_000)
+})
+
+onUnmounted(() => {
+    if (intervalId) clearInterval(intervalId)
+})
 </script>
 
 <style module>
@@ -74,7 +157,6 @@ const handleNext = () => {
     justify-content: center;
     overflow: hidden;
 
-    /* We’ll control width and height in expanded */
     width: 60px;
     height: 28px;
 
@@ -102,15 +184,12 @@ const handleNext = () => {
     display: flex;
     align-items: center;
     gap: 12px;
-    width: 100%;
-    justify-content: space-evenly;
 }
 
 .title {
     font-weight: 500;
     font-size: 12px;
     white-space: nowrap;
-    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     flex-shrink: 1;

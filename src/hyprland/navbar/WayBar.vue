@@ -9,47 +9,84 @@
 
         <div :class="[$style.section, $style.center]">
             <span :class="[$style.item, $style.time]">{{ time }}</span>
-            <NowPlayingIsland />
+            <NowPlayingIsland
+                :wifi="wifiInfo"
+                :bluetooth="bluetoothInfo"
+                :battery="batteryInfo"
+            />
         </div>
 
         <div :class="[$style.section, $style.right]">
             <span
                 :class="[
                     $style.icon,
-                    bluetoothStatus === 'On' ? $style.active : $style.inactive,
+                    bluetoothInfo.power ? $style.active : $style.inactive,
                 ]"
                 title="Bluetooth"
             >
-                &#xf293;
+                
             </span>
 
-            <span :class="[$style.icon, $style.active]" title="Battery">
-                &#xf240;
-            </span>
+            <BatteryStatus
+                :percentage="batteryInfo.percentage"
+                :state="batteryInfo.state"
+            />
 
             <span
                 :class="[
                     $style.icon,
-                    wifiStatus === 'Connected'
-                        ? $style.active
-                        : $style.inactive,
+                    wifiInfo.is_connected ? $style.active : $style.inactive,
                 ]"
-                title="WiFi"
+                :title="
+                    wifiInfo.ssid
+                        ? `WiFi: ${wifiInfo.ssid}`
+                        : 'WiFi: Disconnected'
+                "
             >
-                &#xf1eb;
+                
             </span>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import NowPlayingIsland from './NowPlayingIsland.vue'
+import BatteryStatus from './components/BatteryStatus.vue'
 
-// INFO: Do me from rust to here
 const time = ref('')
-const bluetoothStatus = ref('Unavailable')
-const wifiStatus = ref('Unavailable')
+const wifiInfo = ref({
+    ssid: null as string | null,
+    signal_strength: null as number | null,
+    is_connected: false,
+    bssid: null as string | null,
+    mac_address: null as string | null,
+    channel: null as string | null,
+    security: null as string | null,
+    phy_mode: null as string | null,
+    mcs_index: null as number | null,
+    nss: null as number | null,
+    tx_rate: null as string | null,
+    noise: null as number | null,
+    country_code: null as string | null,
+})
+const bluetoothInfo = ref({
+    power: false,
+    discoverable: false,
+    connectable: false,
+    scanning: false,
+    devices: [] as Array<{
+        name: string | null
+        address: string
+        paired: boolean
+        connected: boolean
+    }>,
+})
+const batteryInfo = ref({
+    percentage: 0,
+    state: 'Charging' || 'Duscharging',
+    warning_level: '',
+})
 
 function updateTime() {
     const now = new Date()
@@ -59,24 +96,26 @@ function updateTime() {
     })
 }
 
-// Bluetooth placeholder (no direct status available in browser)
-function setupBluetooth() {
-    // Browsers don’t expose Bluetooth status directly, so set placeholder or integrate native API if you want
-    bluetoothStatus.value = 'Off' // Or "On" if you have native integration
+async function fetchSystemInfo() {
+    try {
+        const [wifiRes, bluetoothRes, batteryRes] = await Promise.all([
+            fetch('http://127.0.0.1:3000/wifi').then((res) => res.json()),
+            fetch('http://127.0.0.1:3000/bluetooth').then((res) => res.json()),
+            fetch('http://127.0.0.1:3000/battery').then((res) => res.json()),
+        ])
+        wifiInfo.value = wifiRes
+        bluetoothInfo.value = bluetoothRes
+        batteryInfo.value = batteryRes
+    } catch (error) {
+        console.error('Failed to fetch system info:', error)
+    }
 }
 
-// Wifi placeholder (no direct status available in browser)
-function setupWifi() {
-    // Browsers don’t expose WiFi connection status or signal strength
-    wifiStatus.value = navigator.onLine ? 'Connected' : 'Offline'
-}
-
-onMounted(async () => {
+onMounted(() => {
     updateTime()
     setInterval(updateTime, 60000) // Update every minute
-
-    setupBluetooth()
-    setupWifi()
+    fetchSystemInfo()
+    setInterval(fetchSystemInfo, 5000) // Update system info every 5 seconds
 })
 </script>
 
@@ -87,19 +126,16 @@ onMounted(async () => {
     left: 0;
     height: 30px;
     width: 100%;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    /* 🔮 Glassmorphism styles */
-    background-color: rgba(30, 30, 30, 0.35); /* translucent dark */
-    backdrop-filter: blur(12px) saturate(1.8); /* the "frosted glass" effect */
-    -webkit-backdrop-filter: blur(12px) saturate(1.8); /* Safari support */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* soft bottom border */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* subtle depth */
-
+    background-color: rgba(30, 30, 30, 0.35);
+    backdrop-filter: blur(12px) saturate(1.8);
+    -webkit-backdrop-filter: blur(12px) saturate(1.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     color: #fff;
+    font-family: 'JetBrainsMono Nerd Font', monospace;
     font-size: 13px;
     padding: 0 15px;
     z-index: 999;
@@ -127,15 +163,14 @@ onMounted(async () => {
         color 0.3s ease,
         opacity 0.3s ease;
 }
-/* Active: bright colored icons */
+
 .active {
-    color: #61afef; /* bright blue for active */
+    color: #61afef;
     opacity: 1;
 }
 
-/* Inactive: faded */
 .inactive {
-    color: #555; /* greyed out */
+    color: #555;
     opacity: 0.4;
 }
 </style>

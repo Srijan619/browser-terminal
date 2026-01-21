@@ -114,8 +114,9 @@ async function fetchSystemInfo() {
 onMounted(() => {
     updateTime()
     setInterval(updateTime, 60000) // Update every minute
-    fetchSystemInfo()
-    setInterval(fetchSystemInfo, 5000) // Update system info every 5 seconds
+    // TODO: This needs to be thought through
+    //fetchSystemInfo()
+    //setInterval(fetchSystemInfo, 5000) // Update system info every 5 seconds
 })
 </script>
 

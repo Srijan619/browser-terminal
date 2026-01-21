@@ -58,7 +58,7 @@ function handleMouseLeave() {
 <style scoped>
 .container {
     height: 100vh;
-    background-image: url('future_town.jpg');
+    background-image: url('/future_town.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

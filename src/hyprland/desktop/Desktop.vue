@@ -24,7 +24,7 @@ const handleOpenTerminal = () => {
 <style scoped>
 .desktop-container {
     height: 100vh;
-    background-image: url('desktop_wallpaper.png');
+    background-image: url('/desktop_wallpaper.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

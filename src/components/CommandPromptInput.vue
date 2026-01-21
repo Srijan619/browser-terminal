@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useCommandPromptStore } from '../stores/globalStore'
 import { sendInputToServer } from '../utils/commandsToServer'
 import { Commands } from '../utils/commands.ts'
@@ -21,17 +21,6 @@ const commandInput = ref<HTMLInputElement | null>(null)
 
 const showSuggestion = ref(false)
 
-let debounceTimeout: number | undefined
-
-// Debounce function
-const debounce = (func: () => void, delay: number) => {
-    return () => {
-        clearTimeout(debounceTimeout)
-        debounceTimeout = window.setTimeout(() => {
-            func()
-        }, delay)
-    }
-}
 // Focus the input on component mount
 onMounted(() => {
     focusInput()
@@ -39,10 +28,6 @@ onMounted(() => {
 
 const focusInput = () => {
     commandInput.value?.focus()
-}
-
-const blurInput = () => {
-    commandInput.value?.blur()
 }
 
 // Handle command input enter

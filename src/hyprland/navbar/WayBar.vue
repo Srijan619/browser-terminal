@@ -95,7 +95,7 @@ function updateTime() {
         minute: '2-digit',
     })
 }
-
+/*
 async function fetchSystemInfo() {
     try {
         const [wifiRes, bluetoothRes, batteryRes] = await Promise.all([
@@ -110,6 +110,7 @@ async function fetchSystemInfo() {
         console.error('Failed to fetch system info:', error)
     }
 }
+*/
 
 onMounted(() => {
     updateTime()

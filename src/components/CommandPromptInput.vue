@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useCommandPromptStore } from '../stores/globalStore'
 import { sendInputToServer } from '../utils/commandsToServer'
-import { Commands } from '../utils/commands.ts'
+import { getCommandNames } from '../commands/index'
 import SuggestionPrompt from './SuggestionPrompt.vue'
 
 const props = defineProps<{
@@ -84,7 +84,7 @@ const handleSuggestion = () => {
 }
 
 const filterCommandsThatStartWithCurrentCommand = computed(() => {
-    return Commands.filter((command) => {
+    return getCommandNames().filter((command) => {
         return command.startsWith(currentCommand.value)
     })
 })

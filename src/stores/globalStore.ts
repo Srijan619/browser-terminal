@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { PromptInstance } from '../types'
-import { handleCommand } from '../utils/commands'
+import { handleCommand } from '../commands/index'
 import { WELCOME_MESSAGE } from '../staticMessages/welcomeMessage'
 
 export const useCommandPromptStore = defineStore('commandPrompt', () => {

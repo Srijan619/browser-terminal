@@ -6,9 +6,9 @@ export const themes = {
         TERMINAL_COMMAND_PROMPT_COLOR: '#f5f5f5',
         TERMINAL_LS_FILE_COLOR: '#dbff00',
         TERMINAL_LS_FOLDER_COLOR: '#007bff',
-        WINDOW_BORDER_ACTIVE: 'rgba(51, 204, 255, 1)',
-        WINDOW_BORDER_INACTIVE: 'rgba(255, 255, 255, 0.1)',
-        WINDOW_BG_COLOR: 'rgba(20, 20, 20, 0.9)',
+        WINDOW_BORDER_ACTIVE: '#666666', // Subtle active grey
+        WINDOW_BORDER_INACTIVE: '#333333', // More subtle grey
+        WINDOW_BG_COLOR: 'rgba(10, 10, 10, 0.95)', // Almost black
     },
     solarized: {
         TERMINAL_BACKGROUND_COLOR: '#002b36',

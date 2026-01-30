@@ -179,8 +179,8 @@ onMounted(() => {
 
 /* Active State */
 .window-frame.active {
-    border-color: v-bind(WINDOW_BORDER_ACTIVE); /* Hyprland Cyan */
-    box-shadow: 0 0 15px rgba(51, 204, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-color: v-bind(WINDOW_BORDER_ACTIVE);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Just the depth shadow */
 }
 
 .window-frame.maximized {

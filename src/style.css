@@ -13,14 +13,47 @@
 }
 
 :root {
-    font-family: 'JetBrainsMono Nerd Font', monospace;
-    line-height: 1.5;
+    /* Fonts */
+    --font-main: 'JetBrainsMono Nerd Font', monospace;
+    
+    /* Colors - Brand & Accents */
+    --color-primary: #61afef;
+    --color-secondary: #c678dd;
+    --color-accent: #ff4d4d;
+    --color-success: #98c379;
+    --color-warning: #e5c07b;
+    --color-error: #e06c75;
 
+    /* Colors - Neutrals (Dark Theme Defaults) */
+    --color-bg-base: #242424;
+    --color-bg-surface: rgba(30, 30, 30, 0.35);
+    --color-bg-island: rgba(20, 20, 20, 0.85);
+    --color-text-base: rgba(255, 255, 255, 0.87);
+    --color-text-muted: #666;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-subtle: rgba(255, 255, 255, 0.05);
+
+    /* Aesthetics */
+    --blur-base: 12px;
+    --blur-island: 16px;
+    --radius-base: 12px;
+    --radius-pill: 20px;
+    --radius-round: 50%;
+    --shadow-base: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-island: 0 8px 32px rgba(0, 0, 0, 0.6);
+
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-base: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.8s ease;
+
+    font-family: var(--font-main);
+    line-height: 1.5;
     font-weight: 400;
 
     color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    color: var(--color-text-base);
+    background-color: var(--color-bg-base);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;

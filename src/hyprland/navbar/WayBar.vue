@@ -9,11 +9,7 @@
 
         <div :class="[$style.section, $style.center]">
             <span :class="[$style.item, $style.time]">{{ time }}</span>
-            <NowPlayingIsland
-                :wifi="wifiInfo"
-                :bluetooth="bluetoothInfo"
-                :battery="batteryInfo"
-            />
+            <NowPlayingIsland />
         </div>
 
         <div :class="[$style.section, $style.right]">
@@ -154,6 +150,7 @@ onMounted(() => {
     flex: 1;
     justify-content: center;
     display: flex;
+    position: relative;
 }
 
 .item {

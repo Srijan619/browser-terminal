@@ -106,11 +106,12 @@ onUnmounted(() => {
 })
 
 onMounted(() => {
-    // Optional: Center initially if needed, logic could go here
-    // For now using fixed initial position (100,100) or we can center it:
+    // Calculate initial center position based on 75vw width and 65vh height
+    const width = Math.max(700, window.innerWidth * 0.75)
+    
     position.value = {
-        x: (window.innerWidth - 800) / 2, // Approximate centering
-        y: (window.innerHeight - 500) / 2
+        x: (window.innerWidth - width) / 2,
+        y: (window.innerHeight * 0.35) / 2 // Centering vertically (1 - 0.65) / 2
     }
 })
 </script>

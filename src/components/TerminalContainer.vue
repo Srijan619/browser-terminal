@@ -27,13 +27,22 @@ const {
 
 <style>
 .container {
-    height: 100vh;
+    height: 100%;
     background-color: v-bind(TERMINAL_BACKGROUND_COLOR);
     color: v-bind(TERMINAL_REPLY_COLOR);
     display: flex;
     flex-direction: column;
-    padding: 0.1rem;
-    overflow: hidden;
+    padding: 0.2rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.container::-webkit-scrollbar {
+    display: none;
 }
 
 .directory-prompt {

@@ -2,17 +2,23 @@
     <div class="desktop-container">
         <Waybar @openTerminal="handleOpenTerminal" />
         <transition name="slide-up">
-            <div v-show="showTerminal" class="terminal-window">
-                <Container />
-            </div>
+            <WindowFrame 
+                v-if="showTerminal" 
+                title="Terminal" 
+                @close="handleCloseTerminal" 
+                @minimize="handleMinimizeTerminal"
+            >
+                <TerminalContainer />
+            </WindowFrame>
         </transition>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import Container from '../../components/TerminalContainer.vue'
+import TerminalContainer from '../../components/TerminalContainer.vue'
 import Waybar from '../navbar/WayBar.vue'
+import WindowFrame from './WindowFrame.vue'
 import { useViewStore } from '../../stores/viewStore'
 
 const viewStore = useViewStore()
@@ -30,6 +36,14 @@ watch(
 
 const handleOpenTerminal = () => {
     showTerminal.value = !showTerminal.value
+}
+
+const handleCloseTerminal = () => {
+    showTerminal.value = false
+}
+
+const handleMinimizeTerminal = () => {
+    showTerminal.value = false
 }
 </script>
 
@@ -52,28 +66,7 @@ const handleOpenTerminal = () => {
     background-color: transparent !important;
 }
 
-/* Terminal window styling */
-.terminal-window {
-    max-width: 90vw;
-    min-width: 90vw;
-    width: 90vw;
-
-    height: 70vh;
-    min-height: 70vh;
-    max-height: 70vh;
-
-    border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.15); /* subtle glassy border */
-    backdrop-filter: blur(8px) saturate(1.2); /* enable blur behind */
-    background-color: rgba(0, 0, 0, 0.4); /* translucent background */
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6); /* soft shadow */
-    overflow: hidden;
-
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    font-size: small;
-}
+/* Terminal window styling handled by WindowFrame component */
 
 .slide-up-enter-active {
     transition: transform 0.8s ease;

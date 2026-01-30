@@ -10,11 +10,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import Container from '../../components/TerminalContainer.vue'
 import Waybar from '../navbar/WayBar.vue'
+import { useViewStore } from '../../stores/viewStore'
 
-const showTerminal = ref(false)
+const viewStore = useViewStore()
+const showTerminal = ref(viewStore.currentView === 'TERMINAL')
+
+// Watch for store changes (optional, but good for reactivity if view changes while mounted)
+watch(
+    () => viewStore.currentView,
+    (newVal) => {
+        if (newVal === 'TERMINAL') {
+            showTerminal.value = true
+        }
+    }
+)
 
 const handleOpenTerminal = () => {
     showTerminal.value = !showTerminal.value

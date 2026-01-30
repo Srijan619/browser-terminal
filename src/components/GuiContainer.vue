@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount } from 'vue'
 import MainLockScreen from '../hyprland/lockscreen/MainLockScreen.vue'
 import Desktop from '../hyprland/desktop/Desktop.vue'
+import { useViewStore } from '../stores/viewStore'
 
-// Controls which screen is shown
-const lockScreenActive = ref(true)
+const viewStore = useViewStore()
 
 function handleKeyDown(event: KeyboardEvent) {
-    if (event.code === 'Space' && lockScreenActive.value) {
-        lockScreenActive.value = false
+    if (event.code === 'Space' && viewStore.currentView === 'LOCKSCREEN') {
+        viewStore.setView('DESKTOP')
     }
 }
 
@@ -25,12 +25,12 @@ onBeforeUnmount(() => {
     <div class="screen">
         <!-- Lock screen fades out -->
         <transition name="fade">
-            <MainLockScreen v-if="lockScreenActive" class="lockscreen" />
+            <MainLockScreen v-if="viewStore.currentView === 'LOCKSCREEN'" class="lockscreen" />
         </transition>
 
         <!-- Desktop slides in after unlock -->
         <transition name="slide-up">
-            <Desktop v-if="!lockScreenActive" class="desktop" />
+            <Desktop v-if="viewStore.currentView === 'DESKTOP' || viewStore.currentView === 'TERMINAL'" class="desktop" />
         </transition>
     </div>
 </template>
@@ -44,12 +44,11 @@ onBeforeUnmount(() => {
     position: relative;
 }
 
-.fade-leave-active {
+.fade-leave-active,
+.fade-enter-active {
     transition: opacity 0.8s ease;
 }
-.fade-leave-from {
-    opacity: 1;
-}
+.fade-enter-from,
 .fade-leave-to {
     opacity: 0;
 }

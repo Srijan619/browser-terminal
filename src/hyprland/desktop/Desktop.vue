@@ -2,20 +2,24 @@
     <div class="desktop-container">
         <Waybar @openTerminal="handleOpenTerminal" />
         <transition name="slide-up">
+        <transition name="slide-up">
             <WindowFrame 
                 v-if="showTerminal" 
                 title="Terminal" 
+                :isActive="isTerminalActive"
                 @close="handleCloseTerminal" 
                 @minimize="handleMinimizeTerminal"
+                @focus="handleWindowFocus"
             >
                 <TerminalContainer />
             </WindowFrame>
+        </transition>
         </transition>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import TerminalContainer from '../../components/TerminalContainer.vue'
 import Waybar from '../navbar/WayBar.vue'
 import WindowFrame from './WindowFrame.vue'
@@ -23,19 +27,22 @@ import { useViewStore } from '../../stores/viewStore'
 
 const viewStore = useViewStore()
 const showTerminal = ref(viewStore.currentView === 'TERMINAL')
+const isTerminalActive = ref(true)
 
-// Watch for store changes (optional, but good for reactivity if view changes while mounted)
+// Watch for store changes
 watch(
     () => viewStore.currentView,
     (newVal) => {
         if (newVal === 'TERMINAL') {
             showTerminal.value = true
+            isTerminalActive.value = true
         }
     }
 )
 
 const handleOpenTerminal = () => {
     showTerminal.value = !showTerminal.value
+    if (showTerminal.value) isTerminalActive.value = true
 }
 
 const handleCloseTerminal = () => {
@@ -45,6 +52,35 @@ const handleCloseTerminal = () => {
 const handleMinimizeTerminal = () => {
     showTerminal.value = false
 }
+
+const handleWindowFocus = () => {
+    isTerminalActive.value = true
+}
+
+// Keyboard Shortcuts
+const handleKeyDown = (e: KeyboardEvent) => {
+    // Check for Meta (Command/Windows) key
+    if (e.metaKey) {
+        if (e.key === 'Enter') {
+            e.preventDefault()
+            handleOpenTerminal()
+        }
+        if (e.key === 'q' && showTerminal.value) {
+            e.preventDefault()
+            handleCloseTerminal()
+        }
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    // Click outside handler to unset active potentially? 
+    // For now simple focus is fine. 
+})
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeyDown)
+})
 </script>
 
 <style scoped>

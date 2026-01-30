@@ -2,9 +2,20 @@
     <div 
         ref="windowRef"
         class="window-frame" 
-        :class="{ maximized: isMaximized }"
+        :class="{ maximized: isMaximized, active: isActive }"
         :style="windowStyle"
+        @mousedown="emitFocus"
     >
+        <!-- Resize Handles -->
+        <div class="resize-handle n" @mousedown.stop.prevent="startResize($event, 'n')"></div>
+        <div class="resize-handle s" @mousedown.stop.prevent="startResize($event, 's')"></div>
+        <div class="resize-handle e" @mousedown.stop.prevent="startResize($event, 'e')"></div>
+        <div class="resize-handle w" @mousedown.stop.prevent="startResize($event, 'w')"></div>
+        <div class="resize-handle ne" @mousedown.stop.prevent="startResize($event, 'ne')"></div>
+        <div class="resize-handle nw" @mousedown.stop.prevent="startResize($event, 'nw')"></div>
+        <div class="resize-handle se" @mousedown.stop.prevent="startResize($event, 'se')"></div>
+        <div class="resize-handle sw" @mousedown.stop.prevent="startResize($event, 'sw')"></div>
+
         <!-- Title Bar -->
         <div class="title-bar" @dblclick="toggleMaximize" @mousedown="startDrag">
             <div class="title-info">
@@ -34,42 +45,63 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useResizable } from '../../composables/useResizable'
+import { useCustomizationStore } from '../../stores/customizationStore'
+import { storeToRefs } from 'pinia'
 
-defineProps<{
+const props = defineProps<{
     title: string
+    isActive?: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
     (e: 'close'): void
     (e: 'minimize'): void
+    (e: 'focus'): void
 }>()
 
 const isMaximized = ref(false)
 const windowRef = ref<HTMLElement | null>(null)
+const customizationStore = useCustomizationStore()
+const { WINDOW_BORDER_ACTIVE, WINDOW_BORDER_INACTIVE, WINDOW_BG_COLOR } = storeToRefs(customizationStore)
 
-// Dragging State
+// Window State
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
-const position = ref({ x: 100, y: 100 }) // Initial position
+
+// Current Geometry
+const geometry = ref({
+    x: 100, 
+    y: 100,
+    width: 800,
+    height: 500
+})
 
 const windowStyle = computed(() => {
     if (isMaximized.value) {
         return {}
     }
     return {
-        top: `${position.value.y}px`,
-        left: `${position.value.x}px`,
-        transform: 'none' // Remove any centering transforms if present
+        top: `${geometry.value.y}px`,
+        left: `${geometry.value.x}px`,
+        width: `${geometry.value.width}px`,
+        height: `${geometry.value.height}px`,
+        transform: 'none'
     }
 })
+
+const emitFocus = () => {
+    emit('focus')
+}
 
 const toggleMaximize = () => {
     isMaximized.value = !isMaximized.value
 }
 
-// Drag Handlers
+// --- Dragging ---
 const startDrag = (event: MouseEvent) => {
     if (isMaximized.value) return
+    emitFocus()
     
     isDragging.value = true
     const rect = windowRef.value?.getBoundingClientRect()
@@ -87,10 +119,8 @@ const startDrag = (event: MouseEvent) => {
 const onDrag = (event: MouseEvent) => {
     if (!isDragging.value) return
     
-    position.value = {
-        x: event.clientX - dragOffset.value.x,
-        y: event.clientY - dragOffset.value.y
-    }
+    geometry.value.x = event.clientX - dragOffset.value.x
+    geometry.value.y = event.clientY - dragOffset.value.y
 }
 
 const stopDrag = () => {
@@ -99,74 +129,80 @@ const stopDrag = () => {
     document.removeEventListener('mouseup', stopDrag)
 }
 
-// Cleanup just in case
+const { startResize, isResizing } = useResizable(geometry, {
+    onResizeStart: emitFocus
+})
+
+// Cleanup
 onUnmounted(() => {
     document.removeEventListener('mousemove', onDrag)
     document.removeEventListener('mouseup', stopDrag)
 })
 
 onMounted(() => {
-    // Calculate initial center position based on 75vw width and 65vh height
-    const width = Math.max(700, window.innerWidth * 0.75)
-    
-    position.value = {
-        x: (window.innerWidth - width) / 2,
-        y: (window.innerHeight * 0.35) / 2 // Centering vertically (1 - 0.65) / 2
+    // Initial centering
+    const w = Math.max(700, window.innerWidth * 0.75)
+    // Convert '75vw' to pixels approximately for the internal state
+    // We switch to pixel-based state for resize logic to work smoothly
+    geometry.value = {
+        width: w,
+        height: window.innerHeight * 0.65,
+        x: (window.innerWidth - w) / 2,
+        y: (window.innerHeight * 0.35) / 2
     }
 })
 </script>
 
 <style scoped>
 .window-frame {
-    /* Absolute positioning for drag */
     position: absolute;
-    /* Removed fixed width/height percents to allow explicit sizing or defaults */
-    width: 75vw;
-    height: 65vh;
-    min-height: 500px;
-    min-width: 700px;
+    /* Removed min-width/height from here to let JS handle or use simple mins */
+    min-width: 400px; 
+    min-height: 300px;
 
-    /* Hyprland / Glassmorphism Style */
-    background-color: rgba(20, 20, 20, 0.85);
-    backdrop-filter: blur(12px) saturate(1.8);
-    -webkit-backdrop-filter: blur(12px) saturate(1.8);
+    /* Hyprland Style */
+    background-color: v-bind(WINDOW_BG_COLOR);
+    backdrop-filter: blur(12px);
     
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid v-bind(WINDOW_BORDER_INACTIVE); /* Inactive border */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    border-radius: 12px;
+    border-radius: 8px;
     
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-                border-radius 0.3s ease;
-    color: #cdd6f4; /* Hyprland Text Color */
+    overflow: visible; /* Needed for resize handles if they sit outside, but ours sit inside/on-edge */
+    
+    /* Optimized Transitions: removed width/height transition during active manipulation usually, but keeping for smooth maximize */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease; 
+    /* color: #cdd6f4; Handled by children mostly */
 }
 
-/* Maximized State */
+/* Active State */
+.window-frame.active {
+    border-color: v-bind(WINDOW_BORDER_ACTIVE); /* Hyprland Cyan */
+    box-shadow: 0 0 15px rgba(51, 204, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
 .window-frame.maximized {
     width: 100vw !important;
     height: 100vh !important;
+    top: 0 !important;
+    left: 0 !important;
     border-radius: 0;
     border: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 100; /* Ensure it covers everything */
+    z-index: 1000;
 }
 
 /* Title Bar */
 .title-bar {
-    height: 38px;
+    height: 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 12px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 0 10px;
+    background: transparent;
     user-select: none;
-    cursor: default; /* Could be move cursor if draggable */
+    cursor: default;
 }
 
 .title-info {
@@ -179,59 +215,42 @@ onMounted(() => {
     color: #a6adc8;
 }
 
-.app-icon {
-    color: #89b4fa;
-}
+.app-icon { color: #89b4fa; }
 
 /* Controls */
-.window-controls {
-    display: flex;
-    gap: 8px;
-}
-
+.window-controls { display: flex; gap: 6px; }
 .control-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
+    width: 20px; height: 20px;
+    border-radius: 4px; border: none; background: transparent;
     color: #a6adc8;
-    font-family: 'JetBrainsMono Nerd Font', monospace;
-    font-size: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex; justify-content: center; align-items: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    font-size: 12px;
 }
+.control-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+.control-btn.close:hover { background: #f38ba8; color: #1e1e2e; }
 
-.control-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-.control-btn.close:hover {
-    background: #f38ba8; /* Hyprland Red */
-    color: #1e1e2e;
-}
-
-.control-btn.maximize:hover {
-    background: #f9e2af; /* Hyprland Yellow */
-    color: #1e1e2e;
-}
-
-.control-btn.minimize:hover {
-    background: #a6e3a1; /* Hyprland Green */
-    color: #1e1e2e;
-}
-
-/* Content Area */
+/* Content */
 .window-content {
     flex: 1;
     overflow: hidden;
     position: relative;
-    /* Ensure content considers frame borders */
-    display: flex;
-    flex-direction: column;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
 }
+
+/* Resize Handles */
+.resize-handle {
+    position: absolute;
+    z-index: 999;
+}
+.resize-handle.n { top: -4px; left: 0; right: 0; height: 8px; cursor: n-resize; }
+.resize-handle.s { bottom: -4px; left: 0; right: 0; height: 8px; cursor: s-resize; }
+.resize-handle.e { top: 0; bottom: 0; right: -4px; width: 8px; cursor: e-resize; }
+.resize-handle.w { top: 0; bottom: 0; left: -4px; width: 8px; cursor: w-resize; }
+
+.resize-handle.ne { top: -4px; right: -4px; width: 12px; height: 12px; cursor: ne-resize; }
+.resize-handle.nw { top: -4px; left: -4px; width: 12px; height: 12px; cursor: nw-resize; }
+.resize-handle.se { bottom: -4px; right: -4px; width: 12px; height: 12px; cursor: se-resize; }
+.resize-handle.sw { bottom: -4px; left: -4px; width: 12px; height: 12px; cursor: sw-resize; }
 </style>

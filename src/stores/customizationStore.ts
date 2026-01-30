@@ -14,10 +14,15 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
     const TERMINAL_COMMAND_PROMPT_COLOR = ref(
         themes.darkMode.TERMINAL_COMMAND_PROMPT_COLOR
     )
-    const TERMINAL_LS_FILE_COLOR = ref(themes.darkMode.TERMINAL_LS_FILE_COLOR)
     const TERMINAL_LS_FOLDER_COLOR = ref(
         themes.darkMode.TERMINAL_LS_FOLDER_COLOR
     )
+    const TERMINAL_LS_FILE_COLOR = ref(themes.darkMode.TERMINAL_LS_FILE_COLOR)
+
+    // Window Styling
+    const WINDOW_BORDER_ACTIVE = ref(themes.darkMode.WINDOW_BORDER_ACTIVE)
+    const WINDOW_BORDER_INACTIVE = ref(themes.darkMode.WINDOW_BORDER_INACTIVE)
+    const WINDOW_BG_COLOR = ref(themes.darkMode.WINDOW_BG_COLOR)
 
     // THEME
     const TERMINAL_DEFAULT_THEME = ref<keyof typeof themes>('darkMode')
@@ -47,6 +52,16 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
             TERMINAL_LS_FOLDER_COLOR.value =
                 customizationData.TERMINAL_LS_FOLDER_COLOR
         }
+        if (customizationData.WINDOW_BORDER_ACTIVE) {
+            WINDOW_BORDER_ACTIVE.value = customizationData.WINDOW_BORDER_ACTIVE
+        }
+        if (customizationData.WINDOW_BORDER_INACTIVE) {
+            WINDOW_BORDER_INACTIVE.value =
+                customizationData.WINDOW_BORDER_INACTIVE
+        }
+        if (customizationData.WINDOW_BG_COLOR) {
+            WINDOW_BG_COLOR.value = customizationData.WINDOW_BG_COLOR
+        }
 
         // UPDATE THEME
         if (customizationData.TERMINAL_DEFAULT_THEME) {
@@ -66,6 +81,9 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
             TERMINAL_COMMAND_PROMPT_COLOR: TERMINAL_COMMAND_PROMPT_COLOR.value,
             TERMINAL_LS_FILE_COLOR: TERMINAL_LS_FILE_COLOR.value,
             TERMINAL_LS_FOLDER_COLOR: TERMINAL_LS_FOLDER_COLOR.value,
+            WINDOW_BORDER_ACTIVE: WINDOW_BORDER_ACTIVE.value,
+            WINDOW_BORDER_INACTIVE: WINDOW_BORDER_INACTIVE.value,
+            WINDOW_BG_COLOR: WINDOW_BG_COLOR.value,
             TERMINAL_DEFAULT_THEME: TERMINAL_DEFAULT_THEME.value,
         }
     }
@@ -121,5 +139,8 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
         updateCustomization,
         getCustomizationAsJson,
         applyTheme,
+        WINDOW_BORDER_ACTIVE,
+        WINDOW_BORDER_INACTIVE,
+        WINDOW_BG_COLOR,
     }
 })

@@ -19,6 +19,7 @@ export enum Command {
     CLEAR_LOCALSTORAGE = 'clearLocalStorage',
     REMOVE = 'rm',
     GUI = 'gui',
+    CHANGE_THEME = 'changeTheme',
     HELP = 'help',
 }
 
@@ -35,6 +36,7 @@ export const Commands: Command[] = [
     Command.CLEAR_LOCALSTORAGE,
     Command.REMOVE,
     Command.GUI,
+    Command.CHANGE_THEME,
     Command.HELP,
 ]
 const RM_COMMAND_USAGE_MESSAGE =
@@ -358,6 +360,13 @@ const handleGuiCommand = () => {
     PROMPT_INSTANCE.reply = 'You are about to enter to a different world'
 }
 
+const handleChangeThemeCommand = () => {
+    const themeName = commandSuffix(PROMPT_INSTANCE.command)
+    if (!themeName) {
+        PROMPT_INSTANCE.reply = `Which theme would you like? ${getCustomizationStore().availableThemes.join(' | ')}`
+    }
+}
+
 const handleCommand = (promptInstance: PromptInstance): void => {
     if (!promptInstance.command) return
 
@@ -405,6 +414,9 @@ const handleCommand = (promptInstance: PromptInstance): void => {
             break
         case Command.GUI:
             handleGuiCommand()
+            break
+        case Command.CHANGE_THEME:
+            handleChangeThemeCommand()
             break
         default:
             handleDefaultCheck()

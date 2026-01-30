@@ -125,6 +125,7 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
         { deep: true }
     )
 
+    const availableThemes = Object.keys(themes)
     // Initialize the store with values from localStorage (if available)
     initFromLocalStorage()
 
@@ -139,6 +140,7 @@ export const useCustomizationStore = defineStore('customizationStore', () => {
         updateCustomization,
         getCustomizationAsJson,
         applyTheme,
+        availableThemes,
         WINDOW_BORDER_ACTIVE,
         WINDOW_BORDER_INACTIVE,
         WINDOW_BG_COLOR,
